@@ -88,6 +88,7 @@ Usage:
  - Version 1.1.6: -w removed and combined with -W to avoid ghost-signals appear. Many new bit conversions and default to 15.5bit.
  - Version 1.1.7: 14.5bit as default and fixed box reporting, now correct and box-name, only tested on RSP1A.
  - Version 2.0.0: New driver that works with API 3.07 and supports all current boxes. First working version.
+ - Version 2.0.1: Loads of fixes, Wideband, Decimate for websdr.org etc.
 
 ## CREDITS
  - [Open Source Mobile Communications (OSMOCOM)](https://github.com/osmocom/rtl-sdr.git) team for the original rtl_tcp code
