@@ -116,7 +116,7 @@ double atofs(char *s)
 
 static int global_numq = 0;
 static struct llist *ll_buffers = 0;
-static int llbuf_num = 500;
+static int llbuf_num = 512;
 static int ignore_f_command = 0;
 static int ignore_s_command = 0;
 
@@ -126,7 +126,7 @@ static volatile int do_exit = 0;
 static volatile int ctrlC_exit = 0;
 
 #define RSP_TCP_VERSION_MAJOR (2)
-#define RSP_TCP_VERSION_MINOR (1)
+#define RSP_TCP_VERSION_MINOR (0)
 
 #define MAX_DECIMATION_FACTOR (64)
 #define MAX_DEVS 4
@@ -186,17 +186,17 @@ const uint8_t rsp1_lband_gains_ifgains[]      = { 59,57,55,52,50,48,46,43,41,44,
 //New RSP1A values that are the same as RSP1 and they do work - ON5HB
 
 //!!!! I DO NOT HAVE OTHERBOXES THEN RSP1A, SO I CAN NOT TEST STATES FOR OTHER DEVICES !!!!
-const uint8_t rsp1a_am_gains_lnastates[]       = {  3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t rsp1a_am_gains_lnastates[]       = {  4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_am_gains_ifgains[]         = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_vhf_gains_lnastates[]      = {  3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t rsp1a_vhf_gains_lnastates[]      = {  4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_vhf_gains_ifgains[]        = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_band3_gains_lnastates[]    = {  3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t rsp1a_band3_gains_lnastates[]    = {  4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_band3_gains_ifgains[]      = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_bandx_gains_lnastates[]    = {  3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t rsp1a_bandx_gains_lnastates[]    = {  4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_bandx_gains_ifgains[]      = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_band45_gains_lnastates[]   = {  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0 };
+const uint8_t rsp1a_band45_gains_lnastates[]   = {  4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_band45_gains_ifgains[]     = { 59,57,54,52,50,47,45,43,40,38,36,33,31,29,27,24,22,27,24,22,32,29,27,25,22,27,25,22,20 };
-const uint8_t rsp1a_lband_gains_lnastates[]    = {  3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t rsp1a_lband_gains_lnastates[]    = {  4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_lband_gains_ifgains[]      = { 59,57,55,52,50,48,46,43,41,44,42,53,51,49,47,44,42,45,43,40,38,36,34,31,29,27,25,22,20 };
 
 const uint8_t rsp2_am_gains_lnastates[]       = {  8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 6, 5, 5, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -1839,11 +1839,17 @@ static int set_sample_rate(uint32_t sr)
 
 		decimation = 1 << c;
 
-		if (sr >= 6000000)
+		if (sr >= 7000000)
                 {
                         if (wideband == 1) bwType = sdrplay_api_BW_8_000;
                         else bwType = sdrplay_api_BW_6_000;
                 }
+		else if (sr >= 6000000 && sr < 7000000)
+                {
+                        if (wideband == 1) bwType = sdrplay_api_BW_7_000;
+                        else bwType = sdrplay_api_BW_6_000;
+                }
+
 		else if (sr >= 5000000 && sr < 6000000)
                 {
                         if (wideband == 1) bwType = sdrplay_api_BW_6_000;
@@ -1879,49 +1885,42 @@ static int set_sample_rate(uint32_t sr)
 		if (sr == 2048000 || sr == 2880000)
                 {
                         decimation = 1;
-//                        if (opt_deci > 1) deci = opt_deci;
                         if (wideband == 1) bwType = sdrplay_api_BW_5_000;
                         else bwType = sdrplay_api_BW_1_536;
                 }
 		else if (sr == 1024000 || sr == 1536000)
                 {
                         decimation = 2;
-//			if (opt_deci > 2) deci = opt_deci;
 			if (wideband == 1) bwType = sdrplay_api_BW_1_536;
                         else bwType = sdrplay_api_BW_0_600;
                 }
 		else if (sr == 768000)
                 {
                         decimation = 4;
-//			if (opt_deci > 4 ) deci = opt_deci;
 			if (wideband == 1) bwType = sdrplay_api_BW_1_536;
                         else bwType = sdrplay_api_BW_0_600;
                 }
 		else if (sr == 512000)
                 {
                         decimation = 4;
-//			if (opt_deci > 4) deci = opt_deci;
                         if (wideband == 1) bwType = sdrplay_api_BW_0_600;
                         else bwType = sdrplay_api_BW_0_300;
                 }
 		else if (sr == 384000)
                 {
                         decimation = 8;
-//			if (opt_deci > 8) deci = opt_deci;
 			if (wideband == 1) bwType = sdrplay_api_BW_0_600;
                         else bwType = sdrplay_api_BW_0_300;
                 }
                 else if (sr == 256000)
                 {
                         decimation = 8;
-//			if (opt_deci > 8) deci = opt_deci;
 			if (wideband == 1) bwType = sdrplay_api_BW_0_300;
                         else bwType = sdrplay_api_BW_0_200;
                 }
                 else if (sr == 128000 || sr == 192000)
                 {
                         decimation = 16;
-//			if (opt_deci > 16) deci = opt_deci;
                         bwType = sdrplay_api_BW_0_200;
                 }
                 else if (sr == 64000 || sr == 96000)
@@ -1939,13 +1938,13 @@ static int set_sample_rate(uint32_t sr)
 	f = (double)(sr * decimation);
 
 	if (decimation == 1 && wideband == 0) {
-                chParams->ctrlParams.decimation.enable = 0;
+                chParams->ctrlParams.decimation.enable = 1;
                 chParams->ctrlParams.decimation.decimationFactor = 1;
                 chParams->ctrlParams.decimation.wideBandSignal = 0;
 
         }
 	else if (decimation == 1 && wideband == 1) {
-                chParams->ctrlParams.decimation.enable = 0;
+                chParams->ctrlParams.decimation.enable = 1;
                 chParams->ctrlParams.decimation.decimationFactor = 1;
                 chParams->ctrlParams.decimation.wideBandSignal = 1;
         }
@@ -2323,7 +2322,7 @@ void usage(void)
 		"\t-f frequency to tune to [Hz] - If freq set centerfreq and progfreq is ignored!!\n"
 		"\t-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!\n"
 		"\t-W wideband disable* (default: enabled)\n"
-		"\t-n max number of linked list buffers to keep (default: 500)\n"
+		"\t-n max number of linked list buffers to keep (default: 512)\n"
 		"\t-E RSP extended mode enable (default: rtl_tcp compatible mode)\n"
 		"\t-A AM notch enable (default: disabled)\n"
 		"\t-B Broadcast notch enable (default: disabled)\n"
