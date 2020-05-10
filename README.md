@@ -25,42 +25,39 @@ Usage:
 	
 	-P Antenna Port select* (0/1/2, default: 0, Port A)
 	
-	-r Gain reduction (default: 34 / values 0 upto 59)
-	
-	-L Low Noise Amplifier (default: 2 / values 0-9)
-	
 	-T Bias-T enable* (default: disabled)
-	
-	-D DAB Notch disable* (default: enabled)
-	
-	-B Broadcast Notch disable* (default: enabled)
 	
 	-R Refclk output enable* (default: disabled)
 	
-	-f frequency to tune to (Hz) - If freq set center/prog freq is ignored from client!!
+	-f frequency to tune to [Hz] - If freq set centerfreq and progfreq is ignored!!
 	
-	-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!
+ 	-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!
 	
 	-W wideband disable* (default: enabled)
-			
-	-A Auto Gain Control (default: -34 / values 0 to -60)
-	
-	-G Auto Gain Control Loop-bandwidth in Hz (default: 50 / values 0/5/50/100)
 	
 	-n max number of linked list buffers to keep (default: 512)
 	
-	-b Bit conversion to 8bit (default: 14.5 / values 12/12.5/13/13.5/14/14.5/15.5/16)
+	-E RSP extended mode enable (default: rtl_tcp compatible mode)
 	
-	-o Use decimate can give high CPU load (default: minimal-programmed / values 2/4/8/16/32 / 1 = auto-best)
+	-A AM notch enable (default: disabled)
+	
+	-B Broadcast notch enable (default: disabled)
+	
+	-D DAB notch enable (default: disabled)
+	
+	-F RF notch enable (default: disabled)
+	
+	-b Bits used for conversion to 8bit (default:14.5 / values 12/12.5/13/13.5/14/14.5/15.5/16)
 	
 	-v Verbose output (debug) enable (default: disabled)
+
 
 ## USAGE
  - This software is optimised for usage with websdr.org software. 
  - Use !rtl_sdr adress/port/ppm like you normally would with an RTL-dongle
- - RTL RF gain is set automaticly, not much change needed unless signals are too low or high
+ - RSP RF gain / LNA is set inside the source as a table, only RSP1A tested.
  - RTL sample rates tested are those in the websdr.org documentation but lower even down to 62500 has been tested.
- - Install the HW/API 2.13 driver from RSPplay for the RSP1A first!!
+ - Install the HW/API >3.07 driver from RSPplay for the RSP1A first!! (on website shown as 3.06)
 
 ## BUILDING
 ```
