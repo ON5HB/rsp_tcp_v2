@@ -186,17 +186,17 @@ const uint8_t rsp1_lband_gains_ifgains[]      = { 59,57,55,52,50,48,46,43,41,44,
 //New RSP1A values that are the same as RSP1 and they do work - ON5HB
 
 //!!!! I DO NOT HAVE OTHERBOXES THEN RSP1A, SO I CAN NOT TEST STATES FOR OTHER DEVICES !!!!
-const uint8_t rsp1a_am_gains_lnastates[]       = {  3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t rsp1a_am_gains_lnastates[]       = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_am_gains_ifgains[]         = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_vhf_gains_lnastates[]      = {  3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t rsp1a_vhf_gains_lnastates[]      = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_vhf_gains_ifgains[]        = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_band3_gains_lnastates[]    = {  3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t rsp1a_band3_gains_lnastates[]    = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_band3_gains_ifgains[]      = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_bandx_gains_lnastates[]    = {  3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t rsp1a_bandx_gains_lnastates[]    = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_bandx_gains_ifgains[]      = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_band45_gains_lnastates[]   = {  3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t rsp1a_band45_gains_lnastates[]   = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_band45_gains_ifgains[]     = { 59,57,54,52,50,47,45,43,40,38,36,33,31,29,27,24,22,27,24,22,32,29,27,25,22,27,25,22,20 };
-const uint8_t rsp1a_lband_gains_lnastates[]    = {  3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t rsp1a_lband_gains_lnastates[]    = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t rsp1a_lband_gains_ifgains[]      = { 59,57,55,52,50,48,46,43,41,44,42,53,51,49,47,44,42,45,43,40,38,36,34,31,29,27,25,22,20 };
 
 const uint8_t rsp2_am_gains_lnastates[]       = {  8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 6, 5, 5, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
