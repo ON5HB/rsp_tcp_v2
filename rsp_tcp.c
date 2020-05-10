@@ -2324,10 +2324,10 @@ void usage(void)
 		"\t-W wideband disable* (default: enabled)\n"
 		"\t-n max number of linked list buffers to keep (default: 512)\n"
 		"\t-E RSP extended mode enable (default: rtl_tcp compatible mode)\n"
-		"\t-A AM notch enable (default: disabled)\n"
-		"\t-B Broadcast notch enable (default: disabled)\n"
-		"\t-D DAB notch enable (default: disabled)\n"
-		"\t-F RF notch enable (default: disabled)\n"
+		"\t-A AM notch enable (default: disabled) - Duo\n"
+		"\t-B Broadcast notch enable (default: disabled) - RSP1A/Duo/DX\n"
+		"\t-D DAB notch enable (default: disabled) - RSP1A/Duo/DX\n"
+		"\t-F RF notch enable (default: disabled) - RSP2\n"
 		"\t-b Bits used for conversion to 8bit (default:14.5 / values 12/12.5/13/13.5/14/14.5/15.5/16)\n"
 		"\t-v Verbose output (debug) enable (default: disabled)\n\n\n");
 	exit(1);
