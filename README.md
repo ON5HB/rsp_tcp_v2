@@ -33,7 +33,13 @@ Usage:
 	
  	-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!
 	
-	-W wideband disable* (default: enabled)
+	-w wideband disable* (default: enabled)
+	
+	-r rfgain (default: -1 internal table / values 20-59)
+	
+	-l lnalevel (default: internal table / typical used values 0-6 depending on the device)
+	
+	-g AGC disable (default: enabled)
 	
 	-n max number of linked list buffers to keep (default: 512)
 	
@@ -86,6 +92,7 @@ Usage:
  - Version 1.1.7: 14.5bit as default and fixed box reporting, now correct and box-name, only tested on RSP1A.
  - Version 2.0.0: New driver that works with API 3.07 and supports all current boxes. First working version.
  - Version 2.0.1: Loads of fixes, Wideband, Decimate for websdr.org etc.
+ - Version 2.0.4: Added RFgain, LNAlevel and AGC on/off
 
 ## CREDITS
  - [Open Source Mobile Communications (OSMOCOM)](https://github.com/osmocom/rtl-sdr.git) team for the original rtl_tcp code
