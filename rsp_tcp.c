@@ -145,6 +145,9 @@ static int last_gain_idx = 0;
 static int verbose = 0;
 static uint8_t max_lnastate;
 static int wideband = 1;
+static int rfgain = 0;
+static int lnalevel = -1;
+static int agcenable = 1; // 1=on - 0=off AGC
 
 sdrplay_api_DeviceT devices[MAX_DEVS];
 sdrplay_api_DeviceT *chosenDev;
@@ -1205,8 +1208,11 @@ static int gain_index_to_gain(unsigned int index, uint8_t *if_gr_out, uint8_t *l
 		max_lnastate = lnastates[0];
 		uint8_t if_gr = if_gains[index];
 
-		*if_gr_out = if_gr;
-		*lna_state_out = lnastates[index];
+		if (rfgain == 0) {*if_gr_out = if_gr;}
+		else *if_gr_out = rfgain;
+
+		if (lnalevel < 0) {*lna_state_out = lnastates[index];}
+		else *lna_state_out = lnalevel;
 		return 0;
 	}
 
@@ -1217,7 +1223,7 @@ static int apply_agc_settings()
 {
 	int r;
 	sdrplay_api_AgcControlT agc = agc_state ? sdrplay_api_AGC_CTRL_EN : sdrplay_api_AGC_DISABLE;
-
+	if (agcenable == 0) {agc = 0;}
 	chParams->ctrlParams.agc.enable = agc;
 	chParams->ctrlParams.agc.setPoint_dBfs = agc_set_point;
 	chParams->ctrlParams.agc.attack_ms = 500;
@@ -1225,7 +1231,7 @@ static int apply_agc_settings()
 	chParams->ctrlParams.agc.decay_delay_ms = 200;
 	chParams->ctrlParams.agc.decay_threshold_dB = 5;
 
-	printf("apply agc settings - enable:%d\n", agc);
+		printf("apply agc settings - level:%d\n", agc);
 
 	r = sdrplay_api_Update(chosenDev->dev, chosenDev->tuner, sdrplay_api_Update_Ctrl_Agc, sdrplay_api_Update_Ext1_None);
 	if (r != sdrplay_api_Success) {
@@ -2321,7 +2327,10 @@ void usage(void)
 		"\t-R Refclk output enable* (default: disabled)\n"
 		"\t-f frequency to tune to [Hz] - If freq set centerfreq and progfreq is ignored!!\n"
 		"\t-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!\n"
-		"\t-W wideband disable* (default: enabled)\n"
+		"\t-r rfgain (default: -1 internal table / values 20-59)\n"
+		"\t-l lnalevel (default: internal table / typical used values 0-6 depending on the device)\n"
+		"\t-g AGC disable (default: enabled)\n"
+		"\t-w wideband disable* (default: enabled)\n"
 		"\t-n max number of linked list buffers to keep (default: 512)\n"
 		"\t-E RSP extended mode enable (default: rtl_tcp compatible mode)\n"
 		"\t-A AM notch enable (default: disabled) - Duo\n"
@@ -2368,7 +2377,7 @@ int main(int argc, char **argv)
 
 	printf("rsp_tcp version %d.%d\n\n", RSP_TCP_VERSION_MAJOR, RSP_TCP_VERSION_MINOR);
 
-	while ((opt = getopt(argc, argv, "a:p:f:b:s:n:d:P:WTvADBFRE")) != -1) {
+	while ((opt = getopt(argc, argv, "a:p:f:b:s:n:d:P:r:l::gwTvADBFRE")) != -1) {
 		switch (opt) {
 		case 'd':
 			device = atoi(optarg) - 1;
@@ -2396,8 +2405,17 @@ int main(int argc, char **argv)
 		case 'n':
 			llbuf_num = atoi(optarg);
 			break;
-		case 'W':
+		case 'w':
                         wideband = 0;
+                        break;
+		case 'r':
+                        rfgain = atoi(optarg);
+                        break;
+		case 'l':
+                        lnalevel = atoi(optarg);
+                        break;
+		case 'g':
+                        agcenable = 0;
                         break;
 		case 'T':
 			enable_biastee = 1;
