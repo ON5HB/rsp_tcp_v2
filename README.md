@@ -4,7 +4,6 @@
 
 (c)2020 ON5HB Bas Heijermans, Forked and adjusted for websdr.org - V2.0 driver!
 
-## I stop development for now as I have no boxes to test other then the RSP1A ##
 ## The v1 driver works perfect. It's a lot of work to maintain 2 versions for now. ##
 
 An rtl_tcp compatible IQ server for the RSP range of SDRPlay SDR but DOES support the RSPdx (untested)
@@ -36,7 +35,7 @@ Usage:
 	
  	-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!
 	
-	-w wideband disable* (default: enabled)
+	-w wideband enable* (default: disabled)
 	
 	-r rfgain (default: -1 internal table / values 20-59)
 	
@@ -48,15 +47,15 @@ Usage:
 	
 	-E RSP extended mode enable (default: rtl_tcp compatible mode)
 	
-	-A AM notch enable (default: disabled)
+	-A AM notch enable (default: disabled) - Duo
 	
-	-B Broadcast notch enable (default: disabled)
+	-B Broadcast notch enable (default: disabled) - RSP1A/Duo/DX
 	
-	-D DAB notch enable (default: disabled)
+	-D DAB notch enable (default: disabled) - RSP1A/Duo/DX
 	
-	-F RF notch enable (default: disabled)
+	-F RF notch enable (default: disabled) - RSP2
 	
-	-b Bits used for conversion to 8bit (default:14.5 / values 12/12.5/13/13.5/14/14.5/15.5/16)
+	-b Bits used for conversion to 8bit (default:14 / values 12/13/14/15/16)
 	
 	-v Verbose output (debug) enable (default: disabled)
 
@@ -96,6 +95,7 @@ Usage:
  - Version 2.0.0: New driver that works with API 3.07 and supports all current boxes. First working version.
  - Version 2.0.1: Loads of fixes, Wideband, Decimate for websdr.org etc.
  - Version 2.0.4: Added RFgain, LNAlevel and AGC on/off
+ - Version 2.0.5: Changed conversion to 8 bit drasticly.
 
 ## CREDITS
  - [Open Source Mobile Communications (OSMOCOM)](https://github.com/osmocom/rtl-sdr.git) team for the original rtl_tcp code
