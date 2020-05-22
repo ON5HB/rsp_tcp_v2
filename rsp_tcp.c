@@ -144,7 +144,7 @@ static int bwType = sdrplay_api_BW_Undefined;
 static int last_gain_idx = 0;
 static int verbose = 0;
 static uint8_t max_lnastate;
-static int wideband = 1;
+static int wideband = 0;
 static int rfgain = 0;
 static int lnalevel = -1;
 static int agcenable = 1; // 1=on - 0=off AGC
