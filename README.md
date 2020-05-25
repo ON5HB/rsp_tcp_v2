@@ -55,7 +55,7 @@ Usage:
 	
 	-F RF notch enable (default: disabled) - RSP2
 	
-	-b Bits used for conversion to 8bit (default:14 / values 12/13/14/15/16)
+	-b Bits used for conversion to 8bit (default:14 / values 12/13/14/15/16/99)
 	
 	-v Verbose output (debug) enable (default: disabled)
 
@@ -96,6 +96,7 @@ Usage:
  - Version 2.0.1: Loads of fixes, Wideband, Decimate for websdr.org etc.
  - Version 2.0.4: Added RFgain, LNAlevel and AGC on/off
  - Version 2.0.5: Changed conversion to 8 bit drasticly.
+ - Version 2.0.7: Added random rounding with sample-rate 99 = experimental 14 + dithering mode.
 
 ## CREDITS
  - [Open Source Mobile Communications (OSMOCOM)](https://github.com/osmocom/rtl-sdr.git) team for the original rtl_tcp code
