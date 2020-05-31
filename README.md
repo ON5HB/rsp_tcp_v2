@@ -4,9 +4,8 @@
 
 (c)2020 ON5HB Bas Heijermans, Forked and adjusted for websdr.org - V2.0 driver!
 
-## The v1 driver works perfect. It's a lot of work to maintain 2 versions for now. ##
-
 An rtl_tcp compatible IQ server for the RSP range of SDRPlay SDR but DOES support the RSPdx (untested)
+
 ### The best SDRplay to buy and use for websdr.org is the RSP1A, it has the best filters and notches!!!!!!!
 ### As you can use just 1 antenna at the time it makes no sense to get any other.
 
