@@ -33,13 +33,15 @@ Usage:
 	
 	-f frequency to tune to [Hz] - If freq set centerfreq and progfreq is ignored!!
 	
- 	-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!
+	-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!
 	
 	-w wideband enable* (default: disabled)
 	
-	-r rfgain (default: -1 internal table / values 20-59)
+	-r rfgain only works if -g is set (default: -1 internal table / values 20-59)
 	
-	-l lnalevel (default: internal table / typical used values 0-6 depending on the device)
+	-l lnalevel (default: 0 / typical used values 0-6 depending on the device)
+
+	-G AGC setpoint (default: -24 / recommended values -10 / -40)
 	
 	-g AGC disable (default: enabled)
 	
@@ -97,6 +99,7 @@ Usage:
  - Version 2.0.4: Added RFgain, LNAlevel and AGC on/off
  - Version 2.0.5: Changed conversion to 8 bit drasticly.
  - Version 2.0.7: Added random rounding with sample-rate 99 = experimental 14 + dithering mode.
+ - Version 2.1.0: AGC setpoint, set default values for all boxes, should work instantly, probably only AGC-setpoint and LNA needed to optimise for you.
 
 ## CREDITS
  - [Open Source Mobile Communications (OSMOCOM)](https://github.com/osmocom/rtl-sdr.git) team for the original rtl_tcp code

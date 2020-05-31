@@ -134,9 +134,9 @@ static volatile int ctrlC_exit = 0;
 #define DEFAULT_BW_T sdrplay_api_BW_1_536
 #define DEFAULT_FREQUENCY (100000000)
 #define DEFAULT_SAMPLERATE (2048000)
-#define DEFAULT_AGC_SETPOINT -34
-#define DEFAULT_GAIN_REDUCTION 34
-#define DEFAULT_LNA_STATE 2
+#define DEFAULT_AGC_SETPOINT -24
+#define DEFAULT_GAIN_REDUCTION 40
+#define DEFAULT_LNA_STATE 0
 #define DEFAULT_AGC_STATE 1
 #define RTLSDR_TUNER_R820T 5
 
@@ -157,95 +157,95 @@ sdrplay_api_DeviceParamsT *deviceParams;
 sdrplay_api_RxChannelParamsT *chParams;
 
 // *************************************
-#define GAIN_STEPS (29)
+#define GAIN_STEPS (1) // Websdr.org has no steps, so if you need more see remmed table below, 29 steps.
 
-const uint8_t rsp1_am_gains_lnastates[]       = {  3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp1_am_gains_ifgains[]         = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1_vhf_gains_lnastates[]      = {  3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp1_vhf_gains_ifgains[]        = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1_band3_gains_lnastates[]    = {  3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp1_band3_gains_ifgains[]      = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1_bandx_gains_lnastates[]    = {  3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp1_bandx_gains_ifgains[]      = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1_band45_gains_lnastates[]   = {  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0 };
-const uint8_t rsp1_band45_gains_ifgains[]     = { 59,57,54,52,50,47,45,43,40,38,36,33,31,29,27,24,22,27,24,22,32,29,27,25,22,27,25,22,20 };
-const uint8_t rsp1_lband_gains_lnastates[]    = {  3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp1_lband_gains_ifgains[]      = { 59,57,55,52,50,48,46,43,41,44,42,53,51,49,47,44,42,45,43,40,38,36,34,31,29,27,25,22,20 };
+const uint8_t rsp1_0_60_gains_lnastates[]       = {  0 };
+const uint8_t rsp1_0_60_gains_ifgains[]         = { 34 };
+const uint8_t rsp1_60_120_gains_lnastates[]      = {  0 };
+const uint8_t rsp1_60_120_gains_ifgains[]        = { 34 };
+const uint8_t rsp1_120_250_gains_lnastates[]    = {  0 };
+const uint8_t rsp1_120_250_gains_ifgains[]      = { 34 };
+const uint8_t rsp1_250_420_gains_lnastates[]    = {  0 };
+const uint8_t rsp1_250_420_gains_ifgains[]      = { 34 };
+const uint8_t rsp1_420_1000_gains_lnastates[]   = {  0 };
+const uint8_t rsp1_420_1000_gains_ifgains[]     = { 34 };
+const uint8_t rsp1_1000_2000_gains_lnastates[]    = { 0 };
+const uint8_t rsp1_1000_2000_gains_ifgains[]      = { 34 };
 
 //These do not work for websdr.org!!
-//const uint8_t rsp1a_am_gains_lnastates[]      = {  6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 3, 3, 3, 3, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-//const uint8_t rsp1a_am_gains_ifgains[]        = { 59,55,52,48,45,41,57,53,49,46,42,44,40,56,52,48,45,41,44,40,43,45,41,38,34,31,27,24,20 };
-//const uint8_t rsp1a_vhf_gains_lnastates[]     = {  9, 9, 9, 9, 9, 9, 8, 7, 7, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-//const uint8_t rsp1a_vhf_gains_ifgains[]       = { 59,55,52,48,45,41,42,58,54,51,47,43,46,42,44,41,43,42,44,40,43,45,42,38,34,31,27,24,20 };
-//const uint8_t rsp1a_band3_gains_lnastates[]   = {  9, 9, 9, 9, 9, 9, 8, 7, 7, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-//const uint8_t rsp1a_band3_gains_ifgains[]     = { 59,55,52,48,45,41,42,58,54,51,47,43,46,42,44,41,43,42,44,40,43,45,42,38,34,31,27,24,20 };
-//const uint8_t rsp1a_bandx_gains_lnastates[]   = {  9, 9, 9, 9, 9, 9, 8, 7, 7, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-//const uint8_t rsp1a_bandx_gains_ifgains[]     = { 59,55,52,48,45,41,42,58,54,51,47,43,46,42,44,41,43,42,44,40,43,45,42,38,34,31,27,24,20 };
-//const uint8_t rsp1a_band45_gains_lnastates[]  = {  9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 7, 6, 6, 5, 5, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-//const uint8_t rsp1a_band45_gains_ifgains[]    = { 59,55,52,48,44,41,56,52,49,45,41,44,46,42,45,41,44,40,44,40,42,46,42,38,35,31,27,24,20 };
-//const uint8_t rsp1a_lband_gains_lnastates[]   = {  8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 6, 5, 5, 4, 4, 3, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-//const uint8_t rsp1a_lband_gains_ifgains[]     = { 59,55,52,48,45,41,56,53,49,46,42,43,46,42,44,41,43,48,44,40,43,45,42,38,34,31,27,24,20 };
+//const uint8_t rsp1a_0_60_gains_lnastates[]      = {  6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 3, 3, 3, 3, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+//const uint8_t rsp1a_0_60_gains_ifgains[]        = { 59,55,52,48,45,41,57,53,49,46,42,44,40,56,52,48,45,41,44,40,43,45,41,38,34,31,27,24,20 };
+//const uint8_t rsp1a_60_120_gains_lnastates[]     = {  9, 9, 9, 9, 9, 9, 8, 7, 7, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+//const uint8_t rsp1a_60_120_gains_ifgains[]       = { 59,55,52,48,45,41,42,58,54,51,47,43,46,42,44,41,43,42,44,40,43,45,42,38,34,31,27,24,20 };
+//const uint8_t rsp1a_120_250_gains_lnastates[]   = {  9, 9, 9, 9, 9, 9, 8, 7, 7, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+//const uint8_t rsp1a_120_250_gains_ifgains[]     = { 59,55,52,48,45,41,42,58,54,51,47,43,46,42,44,41,43,42,44,40,43,45,42,38,34,31,27,24,20 };
+//const uint8_t rsp1a_250_420_gains_lnastates[]   = {  9, 9, 9, 9, 9, 9, 8, 7, 7, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+//const uint8_t rsp1a_250_420_gains_ifgains[]     = { 59,55,52,48,45,41,42,58,54,51,47,43,46,42,44,41,43,42,44,40,43,45,42,38,34,31,27,24,20 };
+//const uint8_t rsp1a_420_1000_gains_lnastates[]  = {  9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 7, 6, 6, 5, 5, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+//const uint8_t rsp1a_420_1000_gains_ifgains[]    = { 59,55,52,48,44,41,56,52,49,45,41,44,46,42,45,41,44,40,44,40,42,46,42,38,35,31,27,24,20 };
+//const uint8_t rsp1a_1000_2000_gains_lnastates[]   = {  8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 6, 5, 5, 4, 4, 3, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+//const uint8_t rsp1a_1000_2000_gains_ifgains[]     = { 59,55,52,48,45,41,56,53,49,46,42,43,46,42,44,41,43,48,44,40,43,45,42,38,34,31,27,24,20 };
 
 //New RSP1A values that are the same as RSP1 and they do work - ON5HB
 
 //!!!! I DO NOT HAVE OTHERBOXES THEN RSP1A, SO I CAN NOT TEST STATES FOR OTHER DEVICES !!!!
-const uint8_t rsp1a_am_gains_lnastates[]       = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp1a_am_gains_ifgains[]         = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_vhf_gains_lnastates[]      = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp1a_vhf_gains_ifgains[]        = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_band3_gains_lnastates[]    = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp1a_band3_gains_ifgains[]      = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_bandx_gains_lnastates[]    = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp1a_bandx_gains_ifgains[]      = { 59,56,53,50,47,44,41,58,55,52,49,46,43,45,42,58,55,52,49,46,43,41,38,35,32,29,26,23,20 };
-const uint8_t rsp1a_band45_gains_lnastates[]   = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp1a_band45_gains_ifgains[]     = { 59,57,54,52,50,47,45,43,40,38,36,33,31,29,27,24,22,27,24,22,32,29,27,25,22,27,25,22,20 };
-const uint8_t rsp1a_lband_gains_lnastates[]    = {  2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp1a_lband_gains_ifgains[]      = { 59,57,55,52,50,48,46,43,41,44,42,53,51,49,47,44,42,45,43,40,38,36,34,31,29,27,25,22,20 };
+const uint8_t rsp1a_0_60_gains_lnastates[]       = { 0 };
+const uint8_t rsp1a_0_60_gains_ifgains[]         = { 34 };
+const uint8_t rsp1a_60_120_gains_lnastates[]      = { 0 };
+const uint8_t rsp1a_60_120_gains_ifgains[]        = { 34 };
+const uint8_t rsp1a_120_250_gains_lnastates[]    = { 0 };
+const uint8_t rsp1a_120_250_gains_ifgains[]      = { 34 };
+const uint8_t rsp1a_250_420_gains_lnastates[]    = { 0 };
+const uint8_t rsp1a_250_420_gains_ifgains[]      = { 34 };
+const uint8_t rsp1a_420_1000_gains_lnastates[]   = { 0 };
+const uint8_t rsp1a_420_1000_gains_ifgains[]     = { 34 };
+const uint8_t rsp1a_1000_2000_gains_lnastates[]    = { 0 };
+const uint8_t rsp1a_1000_2000_gains_ifgains[]      = { 34 };
 
-const uint8_t rsp2_am_gains_lnastates[]       = {  8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 6, 5, 5, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp2_am_gains_ifgains[]         = { 59,55,52,48,44,41,56,52,49,45,41,44,45,41,48,44,40,45,42,43,49,46,42,38,35,31,27,24,20 };
-const uint8_t rsp2_vhf_gains_lnastates[]      = {  8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 6, 5, 5, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp2_vhf_gains_ifgains[]        = { 59,55,52,48,44,41,56,52,49,45,41,44,45,41,48,44,40,45,42,43,49,46,42,38,35,31,27,24,20 };
-const uint8_t rsp2_band3_gains_lnastates[]    = {  8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 6, 5, 5, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp2_band3_gains_ifgains[]      = { 59,55,52,48,44,41,56,52,49,45,41,44,45,41,48,44,40,45,42,43,49,46,42,38,35,31,27,24,20 };
-const uint8_t rsp2_bandx_gains_lnastates[]    = {  8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 6, 5, 5, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp2_bandx_gains_ifgains[]      = { 59,55,52,48,44,41,56,52,49,45,41,44,45,41,48,44,40,45,42,43,49,46,42,38,35,31,27,24,20 };
-const uint8_t rsp2_band45_gains_lnastates[]   = {  5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 3, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp2_band45_gains_ifgains[]     = { 59,56,53,50,48,45,42,58,55,52,49,47,44,41,43,40,44,41,42,46,43,40,37,34,31,29,26,23,20 };
-const uint8_t rsp2_lband_gains_lnastates[]    = {  4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp2_lband_gains_ifgains[]      = { 59,56,54,51,48,45,43,40,56,54,51,48,45,43,40,43,41,44,41,44,42,39,36,34,31,28,25,23,20 };
-const uint8_t rsp2_hiz_gains_lnastates[]      = {  4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rsp2_hiz_gains_ifgains[]        = { 59,56,54,51,48,45,43,40,56,54,51,48,45,43,40,43,41,44,41,44,42,39,36,34,31,28,25,23,20 };
+const uint8_t rsp2_0_60_gains_lnastates[]       = { 0 };
+const uint8_t rsp2_0_60_gains_ifgains[]         = { 34 };
+const uint8_t rsp2_60_120_gains_lnastates[]      = { 0 };
+const uint8_t rsp2_60_120_gains_ifgains[]        = { 34 };
+const uint8_t rsp2_120_250_gains_lnastates[]    = { 0 };
+const uint8_t rsp2_120_250_gains_ifgains[]      = { 34 };
+const uint8_t rsp2_250_420_gains_lnastates[]    = { 0 };
+const uint8_t rsp2_250_420_gains_ifgains[]      = { 34 };
+const uint8_t rsp2_420_1000_gains_lnastates[]   = { 0 };
+const uint8_t rsp2_420_1000_gains_ifgains[]     = { 34 };
+const uint8_t rsp2_1000_2000_gains_lnastates[]    = { 0 };
+const uint8_t rsp2_1000_2000_gains_ifgains[]      = { 34 };
+const uint8_t rsp2_hiz_gains_lnastates[]      = { 0 };
+const uint8_t rsp2_hiz_gains_ifgains[]        = { 34 };
 
-const uint8_t rspduo_am_gains_lnastates[]     = {  6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 3, 3, 3, 3, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspduo_am_gains_ifgains[]       = { 59,55,52,48,45,41,57,53,49,46,42,44,40,56,52,48,45,41,44,40,43,45,41,38,34,31,27,24,20 };
-const uint8_t rspduo_vhf_gains_lnastates[]    = {  9, 9, 9, 9, 9, 9, 8, 7, 7, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspduo_vhf_gains_ifgains[]      = { 59,55,52,48,45,41,42,58,54,51,47,43,46,42,44,41,43,42,44,40,43,45,42,38,34,31,27,24,20 };
-const uint8_t rspduo_band3_gains_lnastates[]  = {  9, 9, 9, 9, 9, 9, 8, 7, 7, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspduo_band3_gains_ifgains[]    = { 59,55,52,48,45,41,42,58,54,51,47,43,46,42,44,41,43,42,44,40,43,45,42,38,34,31,27,24,20 };
-const uint8_t rspduo_bandx_gains_lnastates[]  = {  9, 9, 9, 9, 9, 9, 8, 7, 7, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspduo_bandx_gains_ifgains[]    = { 59,55,52,48,45,41,42,58,54,51,47,43,46,42,44,41,43,42,44,40,43,45,42,38,34,31,27,24,20 };
-const uint8_t rspduo_band45_gains_lnastates[] = {  9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 7, 6, 6, 5, 5, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspduo_band45_gains_ifgains[]   = { 59,55,52,48,44,41,56,52,49,45,41,44,46,42,45,41,44,40,44,40,42,46,42,38,35,31,27,24,20 };
-const uint8_t rspduo_lband_gains_lnastates[]  = {  8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 6, 5, 5, 4, 4, 3, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspduo_lband_gains_ifgains[]    = { 59,55,52,48,45,41,56,53,49,46,42,43,46,42,44,41,43,48,44,40,43,45,42,38,34,31,27,24,20 };
-const uint8_t rspduo_hiz_gains_lnastates[]    = {  4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspduo_hiz_gains_ifgains[]      = { 59,56,54,51,48,45,43,40,56,54,51,48,45,43,40,43,41,44,41,44,42,39,36,34,31,28,25,23,20 };
+const uint8_t rspduo_0_60_gains_lnastates[]     = { 0 };
+const uint8_t rspduo_0_60_gains_ifgains[]       = { 34 };
+const uint8_t rspduo_60_120_gains_lnastates[]    = { 0 };
+const uint8_t rspduo_60_120_gains_ifgains[]      = { 34 };
+const uint8_t rspduo_120_250_gains_lnastates[]  = { 0 };
+const uint8_t rspduo_120_250_gains_ifgains[]    = { 34 };
+const uint8_t rspduo_250_420_gains_lnastates[]  = { 0 };
+const uint8_t rspduo_250_420_gains_ifgains[]    = { 34 };
+const uint8_t rspduo_420_1000_gains_lnastates[] = { 0 };
+const uint8_t rspduo_420_1000_gains_ifgains[]   = { 34 };
+const uint8_t rspduo_1000_2000_gains_lnastates[]  = { 0 };
+const uint8_t rspduo_1000_2000_gains_ifgains[]    = { 34 };
+const uint8_t rspduo_hiz_gains_lnastates[]    = { 0 };
+const uint8_t rspduo_hiz_gains_ifgains[]      = { 34 };
 
-const uint8_t rspdx_am_gains_lnastates[]      = { 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 3, 3, 3, 3, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspdx_am_gains_ifgains[]        = { 59,55,52,48,45,41,41,40,43,42,42,41,41,40,42,42,47,44,40,43,42,42,41,38,34,31,27,24,20 };
-const uint8_t rspdx_vhf_gains_lnastates[]     = { 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 3, 3, 3, 3, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspdx_vhf_gains_ifgains[]       = { 59,55,50,46,41,40,42,40,42,40,42,41,42,41,43,41,43,41,49,45,40,42,40,42,38,33,29,24,20 };
-const uint8_t rspdx_band3_gains_lnastates[]   = { 26,26,26,26,26,25,23,22,20,19,17,16,14,13,11,10, 8, 7, 5, 5, 5, 3, 2, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspdx_band3_gains_ifgains[]     = { 59,55,50,46,41,40,42,40,42,40,42,41,42,41,43,41,43,41,49,45,40,42,40,42,38,33,29,24,20 };
-const uint8_t rspdx_bandx_gains_lnastates[]   = { 27,27,27,27,27,26,24,23,21,20,18,17,15,14,12,11, 9, 8, 6, 6, 5, 3, 2, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspdx_bandx_gains_ifgains[]     = { 59,55,50,46,41,40,42,40,42,40,42,41,42,41,43,41,43,41,46,42,40,42,40,42,38,33,29,24,20 };
-const uint8_t rspdx_band45_gains_lnastates[]  = { 20,20,20,20,20,20,18,17,16,14,13,12,11, 9, 8, 7, 7, 5, 4, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspdx_band45_gains_ifgains[]    = { 59,55,51,48,44,40,42,42,41,43,42,41,41,43,42,44,40,43,42,41,40,46,43,39,35,31,28,24,20 };
-const uint8_t rspdx_lband_gains_lnastates[]   = { 18,18,18,18,18,18,16,15,14,13,11,10, 9, 8, 7, 6, 6, 6, 5, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspdx_lband_gains_ifgains[]     = { 59,55,52,48,44,40,43,42,41,41,43,42,41,41,40,48,45,41,40,42,42,41,42,39,35,31,27,24,20 };
-const uint8_t rspdx_hiz_gains_lnastates[]     = { 18,18,18,18,18,18,17,16,14,13,12,11,10, 9, 7, 6, 5, 5, 5, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t rspdx_hiz_gains_ifgains[]       = { 59,55,52,48,45,41,41,40,43,42,42,41,41,40,42,42,47,44,40,43,42,42,41,38,34,31,27,24,20 };
+const uint8_t rspdx_0_60_gains_lnastates[]      = { 0 };
+const uint8_t rspdx_0_60_gains_ifgains[]        = { 34 };
+const uint8_t rspdx_60_120_gains_lnastates[]     = { 0 };
+const uint8_t rspdx_60_120_gains_ifgains[]       = { 34 };
+const uint8_t rspdx_120_250_gains_lnastates[]   = { 0 };
+const uint8_t rspdx_120_250_gains_ifgains[]     = { 34 };
+const uint8_t rspdx_250_420_gains_lnastates[]   = { 0 };
+const uint8_t rspdx_250_420_gains_ifgains[]     = { 34 };
+const uint8_t rspdx_420_1000_gains_lnastates[]  = { 0 };
+const uint8_t rspdx_420_1000_gains_ifgains[]    = { 34 };
+const uint8_t rspdx_1000_2000_gains_lnastates[]   = { 0 };
+const uint8_t rspdx_1000_2000_gains_ifgains[]     = { 34 };
+const uint8_t rspdx_hiz_gains_lnastates[]     = { 0 };
+const uint8_t rspdx_hiz_gains_ifgains[]       = { 34 };
 
 typedef enum {
 	RSP_MODEL_UNKNOWN = 0,
@@ -258,13 +258,13 @@ typedef enum {
 
 typedef enum {
 	BAND_UNKNOWN = 0,
-	BAND_AM = 1,
-	BAND_VHF = 2,
-	BAND_3 = 3,
-	BAND_X = 4,
-	BAND_45 = 5,
-	BAND_L = 6,
-	BAND_AM_HIZ = 7
+	BAND_60 = 1,
+	BAND_120 = 2,
+	BAND_250 = 3,
+	BAND_420 = 4,
+	BAND_1000 = 5,
+	BAND_2000 = 6,
+	BAND_0_60_HIZ = 7
 } rsp_band_t;
 
 typedef struct {
@@ -289,7 +289,7 @@ typedef struct {
 	const uint8_t* bandx_if_gains;
 	const uint8_t* band45_lna_states;
 	const uint8_t* band45_if_gains;
-	const uint8_t* lband_lna_states;
+	const uint8_t* lBAND_2000na_states;
 	const uint8_t* lband_if_gains;
 	const uint8_t* hiz_lna_states;
 	const uint8_t* hiz_if_gains;
@@ -308,18 +308,18 @@ static rsp_capabilities_t device_caps[] = {
 		.min_ifgr = 20,
 		.max_ifgr = 59,
 
-		.am_lna_states = rsp1_am_gains_lnastates,
-		.am_if_gains = rsp1_am_gains_ifgains,
-		.vhf_lna_states = rsp1_vhf_gains_lnastates,
-		.vhf_if_gains = rsp1_vhf_gains_ifgains,
-		.band3_lna_states = rsp1_band3_gains_lnastates,
-		.band3_if_gains = rsp1_band3_gains_ifgains,
-		.bandx_lna_states = rsp1_bandx_gains_lnastates,
-		.bandx_if_gains = rsp1_bandx_gains_ifgains,
-		.band45_lna_states = rsp1_band45_gains_lnastates,
-		.band45_if_gains = rsp1_band45_gains_ifgains,
-		.lband_lna_states = rsp1_lband_gains_lnastates,
-		.lband_if_gains = rsp1_lband_gains_ifgains,
+		.am_lna_states = rsp1_0_60_gains_lnastates,
+		.am_if_gains = rsp1_0_60_gains_ifgains,
+		.vhf_lna_states = rsp1_60_120_gains_lnastates,
+		.vhf_if_gains = rsp1_60_120_gains_ifgains,
+		.band3_lna_states = rsp1_120_250_gains_lnastates,
+		.band3_if_gains = rsp1_120_250_gains_ifgains,
+		.bandx_lna_states = rsp1_250_420_gains_lnastates,
+		.bandx_if_gains = rsp1_250_420_gains_ifgains,
+		.band45_lna_states = rsp1_420_1000_gains_lnastates,
+		.band45_if_gains = rsp1_420_1000_gains_ifgains,
+		.lBAND_2000na_states = rsp1_1000_2000_gains_lnastates,
+		.lband_if_gains = rsp1_1000_2000_gains_ifgains,
 		.hiz_lna_states = NULL,
 		.hiz_if_gains = NULL,
 	},
@@ -337,18 +337,18 @@ static rsp_capabilities_t device_caps[] = {
 		.min_ifgr = 20,
 		.max_ifgr = 59,
 
-		.am_lna_states = rsp1a_am_gains_lnastates,
-		.am_if_gains = rsp1a_am_gains_ifgains,
-		.vhf_lna_states = rsp1a_vhf_gains_lnastates,
-		.vhf_if_gains = rsp1a_vhf_gains_ifgains,
-		.band3_lna_states = rsp1a_band3_gains_lnastates,
-		.band3_if_gains = rsp1a_band3_gains_ifgains,
-		.bandx_lna_states = rsp1a_bandx_gains_lnastates,
-		.bandx_if_gains = rsp1a_bandx_gains_ifgains,
-		.band45_lna_states = rsp1a_band45_gains_lnastates,
-		.band45_if_gains = rsp1a_band45_gains_ifgains,
-		.lband_lna_states = rsp1a_lband_gains_lnastates,
-		.lband_if_gains = rsp1a_lband_gains_ifgains,
+		.am_lna_states = rsp1a_0_60_gains_lnastates,
+		.am_if_gains = rsp1a_0_60_gains_ifgains,
+		.vhf_lna_states = rsp1a_60_120_gains_lnastates,
+		.vhf_if_gains = rsp1a_60_120_gains_ifgains,
+		.band3_lna_states = rsp1a_120_250_gains_lnastates,
+		.band3_if_gains = rsp1a_120_250_gains_ifgains,
+		.bandx_lna_states = rsp1a_250_420_gains_lnastates,
+		.bandx_if_gains = rsp1a_250_420_gains_ifgains,
+		.band45_lna_states = rsp1a_420_1000_gains_lnastates,
+		.band45_if_gains = rsp1a_420_1000_gains_ifgains,
+		.lBAND_2000na_states = rsp1a_1000_2000_gains_lnastates,
+		.lband_if_gains = rsp1a_1000_2000_gains_ifgains,
 		.hiz_lna_states = NULL,
 		.hiz_if_gains = NULL,
 	},
@@ -367,18 +367,18 @@ static rsp_capabilities_t device_caps[] = {
 		.min_ifgr = 20,
 		.max_ifgr = 59,
 
-		.am_lna_states = rsp2_am_gains_lnastates,
-		.am_if_gains = rsp2_am_gains_ifgains,
-		.vhf_lna_states = rsp2_vhf_gains_lnastates,
-		.vhf_if_gains = rsp2_vhf_gains_ifgains,
-		.band3_lna_states = rsp2_band3_gains_lnastates,
-		.band3_if_gains = rsp2_band3_gains_ifgains,
-		.bandx_lna_states = rsp2_bandx_gains_lnastates,
-		.bandx_if_gains = rsp2_bandx_gains_ifgains,
-		.band45_lna_states = rsp2_band45_gains_lnastates,
-		.band45_if_gains = rsp2_band45_gains_ifgains,
-		.lband_lna_states = rsp2_lband_gains_lnastates,
-		.lband_if_gains = rsp2_lband_gains_ifgains,
+		.am_lna_states = rsp2_0_60_gains_lnastates,
+		.am_if_gains = rsp2_0_60_gains_ifgains,
+		.vhf_lna_states = rsp2_60_120_gains_lnastates,
+		.vhf_if_gains = rsp2_60_120_gains_ifgains,
+		.band3_lna_states = rsp2_120_250_gains_lnastates,
+		.band3_if_gains = rsp2_120_250_gains_ifgains,
+		.bandx_lna_states = rsp2_250_420_gains_lnastates,
+		.bandx_if_gains = rsp2_250_420_gains_ifgains,
+		.band45_lna_states = rsp2_420_1000_gains_lnastates,
+		.band45_if_gains = rsp2_420_1000_gains_ifgains,
+		.lBAND_2000na_states = rsp2_1000_2000_gains_lnastates,
+		.lband_if_gains = rsp2_1000_2000_gains_ifgains,
 		.hiz_lna_states = rsp2_hiz_gains_lnastates,
 		.hiz_if_gains = rsp2_hiz_gains_ifgains,
 	},
@@ -399,18 +399,18 @@ static rsp_capabilities_t device_caps[] = {
 		.min_ifgr = 20,
 		.max_ifgr = 59,
 
-		.am_lna_states = rspduo_am_gains_lnastates,
-		.am_if_gains = rspduo_am_gains_ifgains,
-		.vhf_lna_states = rspduo_vhf_gains_lnastates,
-		.vhf_if_gains = rspduo_vhf_gains_ifgains,
-		.band3_lna_states = rspduo_band3_gains_lnastates,
-		.band3_if_gains = rspduo_band3_gains_ifgains,
-		.bandx_lna_states = rspduo_bandx_gains_lnastates,
-		.bandx_if_gains = rspduo_bandx_gains_ifgains,
-		.band45_lna_states = rspduo_band45_gains_lnastates,
-		.band45_if_gains = rspduo_band45_gains_ifgains,
-		.lband_lna_states = rspduo_lband_gains_lnastates,
-		.lband_if_gains = rspduo_lband_gains_ifgains,
+		.am_lna_states = rspduo_0_60_gains_lnastates,
+		.am_if_gains = rspduo_0_60_gains_ifgains,
+		.vhf_lna_states = rspduo_60_120_gains_lnastates,
+		.vhf_if_gains = rspduo_60_120_gains_ifgains,
+		.band3_lna_states = rspduo_120_250_gains_lnastates,
+		.band3_if_gains = rspduo_120_250_gains_ifgains,
+		.bandx_lna_states = rspduo_250_420_gains_lnastates,
+		.bandx_if_gains = rspduo_250_420_gains_ifgains,
+		.band45_lna_states = rspduo_420_1000_gains_lnastates,
+		.band45_if_gains = rspduo_420_1000_gains_ifgains,
+		.lBAND_2000na_states = rspduo_1000_2000_gains_lnastates,
+		.lband_if_gains = rspduo_1000_2000_gains_ifgains,
 		.hiz_lna_states = rspduo_hiz_gains_lnastates,
 		.hiz_if_gains = rspduo_hiz_gains_ifgains,
 	},
@@ -429,18 +429,18 @@ static rsp_capabilities_t device_caps[] = {
 		.min_ifgr = 20,
 		.max_ifgr = 59,
 
-		.am_lna_states = rspdx_am_gains_lnastates,
-		.am_if_gains = rspdx_am_gains_ifgains,
-		.vhf_lna_states = rspdx_vhf_gains_lnastates,
-		.vhf_if_gains = rspdx_vhf_gains_ifgains,
-		.band3_lna_states = rspdx_band3_gains_lnastates,
-		.band3_if_gains = rspdx_band3_gains_ifgains,
-		.bandx_lna_states = rspdx_bandx_gains_lnastates,
-		.bandx_if_gains = rspdx_bandx_gains_ifgains,
-		.band45_lna_states = rspdx_band45_gains_lnastates,
-		.band45_if_gains = rspdx_band45_gains_ifgains,
-		.lband_lna_states = rspdx_lband_gains_lnastates,
-		.lband_if_gains = rspdx_lband_gains_ifgains,
+		.am_lna_states = rspdx_0_60_gains_lnastates,
+		.am_if_gains = rspdx_0_60_gains_ifgains,
+		.vhf_lna_states = rspdx_60_120_gains_lnastates,
+		.vhf_if_gains = rspdx_60_120_gains_ifgains,
+		.band3_lna_states = rspdx_120_250_gains_lnastates,
+		.band3_if_gains = rspdx_120_250_gains_ifgains,
+		.bandx_lna_states = rspdx_250_420_gains_lnastates,
+		.bandx_if_gains = rspdx_250_420_gains_ifgains,
+		.band45_lna_states = rspdx_420_1000_gains_lnastates,
+		.band45_if_gains = rspdx_420_1000_gains_ifgains,
+		.lBAND_2000na_states = rspdx_1000_2000_gains_lnastates,
+		.lband_if_gains = rspdx_1000_2000_gains_ifgains,
 		.hiz_lna_states = rspdx_hiz_gains_lnastates,
 		.hiz_if_gains = rspdx_hiz_gains_ifgains,
 	},
@@ -458,7 +458,7 @@ static int lna_state = DEFAULT_LNA_STATE;
 static int agc_state = DEFAULT_AGC_STATE;
 static int agc_set_point = DEFAULT_AGC_SETPOINT;
 static int gain_reduction = DEFAULT_GAIN_REDUCTION;
-static float sample_bits = 14; // 12 ------ 16 'bits' used for conversion to 8 bit
+static int sample_bits = 16; // 12 ------ 16 'bits' used for conversion to 8 bit
 				 // ************************************************************
 
 #ifdef _WIN32
@@ -577,37 +577,32 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
 
-                                if (sample_bits == 12) {
-                                        *(data++) = (unsigned char)((((*xi << 4) >> 7) +256.75) /2 );
-                                        *(data++) = (unsigned char)((((*xq << 4) >> 7) +256.75) /2 );
-                                }
+				if (sample_bits == 12) {
+					*(data++) = (unsigned char)((((*xi << 4) >> 7) +256.75) /2 );
+                                	*(data++) = (unsigned char)((((*xq << 4) >> 7) +256.75) /2 );
+	                        }
 
-                                else if (sample_bits == 13) {
-                                        *(data++) = (unsigned char)((((*xi << 3) >> 7) +256.75) /2 );
-                                        *(data++) = (unsigned char)((((*xq << 3) >> 7) +256.75) /2 );
-                                }
-                                else if (sample_bits == 14) {
+				else if (sample_bits == 13) {
+					*(data++) = (unsigned char)((((*xi << 3) >> 7) +256.75) /2 );
+                                	*(data++) = (unsigned char)((((*xq << 3) >> 7) +256.75) /2 );
+				}
+				else if (sample_bits == 14) {
                                         *(data++) = (unsigned char)((((*xi << 2) >> 7) +256.75) /2 );
                                         *(data++) = (unsigned char)((((*xq << 2) >> 7) +256.75) /2 );
-                                }
-                                else if (sample_bits == 15) {
+				}
+				else if (sample_bits == 15) {
                                         *(data++) = (unsigned char)((((*xi << 1) >> 7) +256.75) /2 );
                                         *(data++) = (unsigned char)((((*xq << 1) >> 7) +256.75) /2 );
-                                }
+				}
 
-                                else if (sample_bits == 16) {
-                                        *(data++) = (unsigned char)(((*xi >> 7) +256.75) /2 );
-                                        *(data++) = (unsigned char)(((*xq >> 7) +256.75) /2 );
-                                }
+		                else if (sample_bits == 16) {
+					*(data++) = (unsigned char)(((*xi >> 7) +256.75) /2 );
+        	                        *(data++) = (unsigned char)(((*xq >> 7) +256.75) /2 );
+				}
 //bas
-                                else if (sample_bits == 99) {
-                                        *(data++) = (unsigned char)((((*xi << 2) >> 7) + 256.75 + (rand() % 2)) / 2);
-                                        *(data++) = (unsigned char)((((*xq << 2) >> 7) + 256.75 + (rand() % 2)) / 2);
-// I/Q value reader - if enabled show values
-//if (*xi > 6000 || *xi < -6000 || *xq > 6000 || *xq < -6000) {
-//printf("xi=%hd,xq=%hd\n",*xi,*xq);}
-
-
+				else if (sample_bits == 99) {
+					*(data++) = (unsigned char)((((*xi << 2) >> 7) +256.75) /2 );
+					*(data++) = (unsigned char)((((*xq << 2) >> 7) +256.75) /2 );
                 	        }
 			rpt->len = 2 * numSamples;
                 }
@@ -663,37 +658,32 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
 
-                                if (sample_bits == 12) {
-                                        *(data++) = (unsigned char)((((*xi << 4) >> 7) +256.75) /2 );
-                                        *(data++) = (unsigned char)((((*xq << 4) >> 7) +256.75) /2 );
-                                }
+				if (sample_bits == 12) {
+					*(data++) = (unsigned char)((((*xi << 4) >> 7) +256.75) /2 );
+                                	*(data++) = (unsigned char)((((*xq << 4) >> 7) +256.75) /2 );
+	                        }
 
-                                else if (sample_bits == 13) {
-                                        *(data++) = (unsigned char)((((*xi << 3) >> 7) +256.75) /2 );
-                                        *(data++) = (unsigned char)((((*xq << 3) >> 7) +256.75) /2 );
-                                }
-                                else if (sample_bits == 14) {
+				else if (sample_bits == 13) {
+					*(data++) = (unsigned char)((((*xi << 3) >> 7) +256.75) /2 );
+                                	*(data++) = (unsigned char)((((*xq << 3) >> 7) +256.75) /2 );
+				}
+				else if (sample_bits == 14) {
                                         *(data++) = (unsigned char)((((*xi << 2) >> 7) +256.75) /2 );
                                         *(data++) = (unsigned char)((((*xq << 2) >> 7) +256.75) /2 );
-                                }
-                                else if (sample_bits == 15) {
+				}
+				else if (sample_bits == 15) {
                                         *(data++) = (unsigned char)((((*xi << 1) >> 7) +256.75) /2 );
                                         *(data++) = (unsigned char)((((*xq << 1) >> 7) +256.75) /2 );
-                                }
+				}
 
-                                else if (sample_bits == 16) {
-                                        *(data++) = (unsigned char)(((*xi >> 7) +256.75) /2 );
-                                        *(data++) = (unsigned char)(((*xq >> 7) +256.75) /2 );
-                                }
+		                else if (sample_bits == 16) {
+					*(data++) = (unsigned char)(((*xi >> 7) +256.75) /2 );
+        	                        *(data++) = (unsigned char)(((*xq >> 7) +256.75) /2 );
+				}
 //bas
-                                else if (sample_bits == 99) {
-                                        *(data++) = (unsigned char)((((*xi << 2) >> 7) + 256.75 + (rand() % 2)) / 2);
-                                        *(data++) = (unsigned char)((((*xq << 2) >> 7) + 256.75 + (rand() % 2)) / 2);
-// I/Q value reader - if enabled show values
-//if (*xi > 6000 || *xi < -6000 || *xq > 6000 || *xq < -6000) {
-//printf("xi=%hd,xq=%hd\n",*xi,*xq);}
-
-
+				else if (sample_bits == 99) {
+					*(data++) = (unsigned char)((((*xi << 2) >> 7) +256.75) /2 );
+					*(data++) = (unsigned char)((((*xq << 2) >> 7) +256.75) /2 );
                 	        }
                         rpt->len = 2 * numSamples;
                 }
@@ -824,32 +814,32 @@ static rsp_model_t hardware_ver_to_model(int hw_version)
 static rsp_band_t frequency_to_band(unsigned int f)
 {
 	if (f >= 0 && f < 60000000) {
-		return current_antenna_input == 2 ? BAND_AM_HIZ : BAND_AM;
+		return current_antenna_input == 2 ? BAND_0_60_HIZ : BAND_60;
 	}
 	else
 	if (f >= 60000000 && f < 120000000)
 	{
-		return BAND_VHF;
+		return BAND_120;
 	}
 	else
 	if (f >= 120000000 && f < 250000000)
 	{
-		return BAND_3;
+		return BAND_250;
 	}
 	else
 	if (f >= 250000000 && f < 420000000)
 	{
-		return BAND_X;
+		return BAND_420;
 	}
 	else
 	if (f >= 420000000 && f < 1000000000)
 	{
-		return BAND_45;
+		return BAND_1000;
 	}
 	else
 	if (f >= 1000000000 && f <= 2000000000)
 	{
-		return BAND_L;
+		return BAND_2000;
 	}
 	else
 	{
@@ -900,37 +890,37 @@ static int gain_index_to_gain(unsigned int index, uint8_t *if_gr_out, uint8_t *l
 
 	switch (current_band)
 	{
-	case BAND_AM:
+	case BAND_60:
 		if_gains = hardware_caps->am_if_gains;
 		lnastates = hardware_caps->am_lna_states;
 		break;
 
-	case BAND_VHF:
+	case BAND_120:
 		if_gains = hardware_caps->vhf_if_gains;
 		lnastates = hardware_caps->vhf_lna_states;
 		break;
 
-	case BAND_3:
+	case BAND_250:
 		if_gains = hardware_caps->band3_if_gains;
 		lnastates = hardware_caps->band3_lna_states;
 		break;
 
-	case BAND_X:
+	case BAND_420:
 		if_gains = hardware_caps->bandx_if_gains;
 		lnastates = hardware_caps->bandx_lna_states;
 		break;
 
-	case BAND_45:
+	case BAND_1000:
 		if_gains = hardware_caps->band45_if_gains;
 		lnastates = hardware_caps->band45_lna_states;
 		break;
 
-	case BAND_L:
+	case BAND_2000:
 		if_gains = hardware_caps->lband_if_gains;
-		lnastates = hardware_caps->lband_lna_states;
+		lnastates = hardware_caps->lBAND_2000na_states;
 		break;
 
-	case BAND_AM_HIZ:
+	case BAND_0_60_HIZ:
 		if_gains = hardware_caps->hiz_if_gains;
 		lnastates = hardware_caps->hiz_lna_states;
 		break;
@@ -945,10 +935,10 @@ static int gain_index_to_gain(unsigned int index, uint8_t *if_gr_out, uint8_t *l
 		uint8_t if_gr = if_gains[index];
 
 		if (rfgain == 0) {*if_gr_out = if_gr;}
-		else *if_gr_out = rfgain;
+		else {*if_gr_out = rfgain;}
 
 		if (lnalevel < 0) {*lna_state_out = lnastates[index];}
-		else *lna_state_out = lnalevel;
+		else {*lna_state_out = lnalevel;}
 		return 0;
 	}
 
@@ -2063,9 +2053,10 @@ void usage(void)
 		"\t-R Refclk output enable* (default: disabled)\n"
 		"\t-f frequency to tune to [Hz] - If freq set centerfreq and progfreq is ignored!!\n"
 		"\t-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!\n"
-		"\t-r rfgain (default: -1 internal table / values 20-59)\n"
-		"\t-l lnalevel (default: internal table / typical used values 0-6 depending on the device)\n"
+		"\t-G AGC setpoint (default: -24 / recommended values -10 to -40)\n"
 		"\t-g AGC disable (default: enabled)\n"
+		"\t-r rfgain only works if -g is set (default: -1 internal table / values 20-59)\n"
+		"\t-l lnalevel (default: 0 / typical used values 0-6 depending on the device)\n"
 		"\t-w wideband enable* (default: disabled)\n"
 		"\t-n max number of linked list buffers to keep (default: 512)\n"
 		"\t-E RSP extended mode enable (default: rtl_tcp compatible mode)\n"
@@ -2073,7 +2064,7 @@ void usage(void)
 		"\t-B Broadcast notch enable (default: disabled) - RSP1A/Duo/DX\n"
 		"\t-D DAB notch enable (default: disabled) - RSP1A/Duo/DX\n"
 		"\t-F RF notch enable (default: disabled) - RSP2\n"
-		"\t-b Bits used for conversion to 8bit (default:14 / values 12/13/14/15/16)\n"
+		"\t-b Bits used for conversion to 8bit (default:16 / values 12/13/14/15/16)\n"
 		"\t-v Verbose output (debug) enable (default: disabled)\n\n\n");
 	exit(1);
 }
@@ -2113,7 +2104,7 @@ int main(int argc, char **argv)
 
 	printf("rsp_tcp version %d.%d\n\n", RSP_TCP_VERSION_MAJOR, RSP_TCP_VERSION_MINOR);
 
-	while ((opt = getopt(argc, argv, "a:p:f:b:s:n:d:P:r:l::gwTvADBFRE")) != -1) {
+	while ((opt = getopt(argc, argv, "a:p:f:b:s:n:d:P:G:r:l::gwTvADBFRE")) != -1) {
 		switch (opt) {
 		case 'd':
 			device = atoi(optarg) - 1;
@@ -2123,6 +2114,9 @@ int main(int argc, char **argv)
 			break;
 		case 'P':
 			antenna = atoi(optarg);
+			break;
+		case 'G':
+			agc_set_point = atoi(optarg);
 			break;
 		case 'f':
 			frequency = (uint32_t)atofs(optarg);
