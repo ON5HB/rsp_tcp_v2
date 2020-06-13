@@ -100,6 +100,7 @@ Usage:
  - Version 2.0.5: Changed conversion to 8 bit drasticly.
  - Version 2.0.7: Added random rounding with sample-rate 99 = experimental 14 + dithering mode.
  - Version 2.1.0: AGC setpoint, set default values for all boxes, should work instantly, probably only AGC-setpoint and LNA needed to optimise for you.
+ - Version 2.1.1: Some commandline options where not working like -d, it would fail to init the correct box.
 
 ## CREDITS
  - [Open Source Mobile Communications (OSMOCOM)](https://github.com/osmocom/rtl-sdr.git) team for the original rtl_tcp code
