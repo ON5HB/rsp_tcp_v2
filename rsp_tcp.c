@@ -148,6 +148,12 @@ static int wideband = 0;
 static int rfgain = 0;
 static int lnalevel = -1;
 static int agcenable = 1; // 1=on - 0=off AGC
+static int device = 0;
+static int antenna = 0;
+static int enable_biastee = 0;
+static int enable_refout = 0;
+static uint8_t if_gr;
+static uint8_t lnastate;
 
 sdrplay_api_DeviceT devices[MAX_DEVS];
 sdrplay_api_DeviceT *chosenDev;
@@ -1242,7 +1248,6 @@ static int set_antenna_input(unsigned int antenna)
 
 		rsp_band_t new_band = frequency_to_band(current_frequency);
 		if (new_band != current_band) {
-			uint8_t if_gr, lnastate;
 
 			current_band = new_band;
 
@@ -2090,10 +2095,6 @@ int main(int argc, char **argv)
 
 	unsigned int numDevs;
 	unsigned int notch = 0;
-	int device = 0;
-	int antenna = 0;
-	int enable_biastee = 0;
-	int enable_refout = 0;
 
 #ifdef _WIN32
 	WSADATA wsd;
