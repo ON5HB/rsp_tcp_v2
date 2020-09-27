@@ -116,7 +116,7 @@ double atofs(char *s)
 
 static int global_numq = 0;
 static struct llist *ll_buffers = 0;
-static int llbuf_num = 512;
+static int llbuf_num = 510;
 static int ignore_f_command = 0;
 static int ignore_s_command = 0;
 
@@ -129,14 +129,14 @@ static volatile int ctrlC_exit = 0;
 #define RSP_TCP_VERSION_MINOR (0)
 
 #define MAX_DECIMATION_FACTOR (64)
-#define MAX_DEVS 4
+#define MAX_DEVS 8
 #define WORKER_TIMEOUT_SEC 3
 #define DEFAULT_BW_T sdrplay_api_BW_1_536
 #define DEFAULT_FREQUENCY (100000000)
 #define DEFAULT_SAMPLERATE (2048000)
-#define DEFAULT_AGC_SETPOINT -24
-#define DEFAULT_GAIN_REDUCTION 40
-#define DEFAULT_LNA_STATE 0
+#define DEFAULT_AGC_SETPOINT -34
+#define DEFAULT_GAIN_REDUCTION 34
+#define DEFAULT_LNA_STATE 1
 #define DEFAULT_AGC_STATE 1
 #define RTLSDR_TUNER_R820T 5
 
@@ -464,8 +464,6 @@ static int lna_state = DEFAULT_LNA_STATE;
 static int agc_state = DEFAULT_AGC_STATE;
 static int agc_set_point = DEFAULT_AGC_SETPOINT;
 static int gain_reduction = DEFAULT_GAIN_REDUCTION;
-static int sample_bits = 16; // 12 ------ 16 'bits' used for conversion to 8 bit
-				 // ************************************************************
 
 #ifdef _WIN32
 int gettimeofday(struct timeval *tv, void* ignored)
@@ -555,6 +553,8 @@ void event_callback(sdrplay_api_EventT eventId, sdrplay_api_TunerSelectT tunerS,
 void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, unsigned int numSamples, unsigned int reset, void* cbContext)
 {
 	unsigned int i;
+	short xi2=0;
+	short xq2=0;
 	if(params->fsChanged != 0)
 	{
 		fsc = params->fsChanged;
@@ -583,33 +583,20 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
 
-				if (sample_bits == 12) {
-					*(data++) = (unsigned char)((((*xi << 4) >> 7) +256.75) /2 );
-                                	*(data++) = (unsigned char)((((*xq << 4) >> 7) +256.75) /2 );
-	                        }
+				if (*xi < -8192)
+                        		{xi2 = -8192;}
+			        else if (*xi > 8191)
+                        		{xi2 = 8191;}
+			        else {xi2 = *xi;}
+				if (*xq < -8192)
+                                        {xq2 = -8192;}
+                                else if (*xq > 8191)
+                                        {xq2 = 8191;}
+                                else {xq2 = *xq;}
 
-				else if (sample_bits == 13) {
-					*(data++) = (unsigned char)((((*xi << 3) >> 7) +256.75) /2 );
-                                	*(data++) = (unsigned char)((((*xq << 3) >> 7) +256.75) /2 );
-				}
-				else if (sample_bits == 14) {
-                                        *(data++) = (unsigned char)((((*xi << 2) >> 7) +256.75) /2 );
-                                        *(data++) = (unsigned char)((((*xq << 2) >> 7) +256.75) /2 );
-				}
-				else if (sample_bits == 15) {
-                                        *(data++) = (unsigned char)((((*xi << 1) >> 7) +256.75) /2 );
-                                        *(data++) = (unsigned char)((((*xq << 1) >> 7) +256.75) /2 );
-				}
+                                        *(data++) = (((xi2 >> 6 ) &0xFF) +128.4);
+                                        *(data++) = (((xq2 >> 6 ) &0xFF) +128.4);
 
-		                else if (sample_bits == 16) {
-					*(data++) = (unsigned char)(((*xi >> 7) +256.75) /2 );
-        	                        *(data++) = (unsigned char)(((*xq >> 7) +256.75) /2 );
-				}
-//bas
-				else if (sample_bits == 99) {
-					*(data++) = (unsigned char)((((*xi << 2) >> 7) +256.75) /2 );
-					*(data++) = (unsigned char)((((*xq << 2) >> 7) +256.75) /2 );
-                	        }
 			rpt->len = 2 * numSamples;
                 }
 
@@ -655,6 +642,8 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, unsigned int numSamples, unsigned int reset, void* cbContext)
 {
 	unsigned int i;
+	short xi2=0;
+	short xq2=0;
 	if(!do_exit) {
                 struct llist *rpt = (struct llist*)malloc(sizeof(struct llist));
 		rpt->data = malloc(2 * numSamples * sizeof(short));
@@ -664,33 +653,20 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
 
-				if (sample_bits == 12) {
-					*(data++) = (unsigned char)((((*xi << 4) >> 7) +256.75) /2 );
-                                	*(data++) = (unsigned char)((((*xq << 4) >> 7) +256.75) /2 );
-	                        }
+				if (*xi < -8192)
+                        		{xi2 = -8192;}
+			        else if (*xi > 8191)
+                        		{xi2 = 8191;}
+			        else {xi2 = *xi;}
+				if (*xq < -8192)
+                                        {xq2 = -8192;}
+                                else if (*xq > 8191)
+                                        {xq2 = 8191;}
+                                else {xq2 = *xq;}
 
-				else if (sample_bits == 13) {
-					*(data++) = (unsigned char)((((*xi << 3) >> 7) +256.75) /2 );
-                                	*(data++) = (unsigned char)((((*xq << 3) >> 7) +256.75) /2 );
-				}
-				else if (sample_bits == 14) {
-                                        *(data++) = (unsigned char)((((*xi << 2) >> 7) +256.75) /2 );
-                                        *(data++) = (unsigned char)((((*xq << 2) >> 7) +256.75) /2 );
-				}
-				else if (sample_bits == 15) {
-                                        *(data++) = (unsigned char)((((*xi << 1) >> 7) +256.75) /2 );
-                                        *(data++) = (unsigned char)((((*xq << 1) >> 7) +256.75) /2 );
-				}
+                                        *(data++) = (((xi2 >> 6 ) &0xFF) +128.4);
+                                        *(data++) = (((xq2 >> 6 ) &0xFF) +128.4);
 
-		                else if (sample_bits == 16) {
-					*(data++) = (unsigned char)(((*xi >> 7) +256.75) /2 );
-        	                        *(data++) = (unsigned char)(((*xq >> 7) +256.75) /2 );
-				}
-//bas
-				else if (sample_bits == 99) {
-					*(data++) = (unsigned char)((((*xi << 2) >> 7) +256.75) /2 );
-					*(data++) = (unsigned char)((((*xq << 2) >> 7) +256.75) /2 );
-                	        }
                         rpt->len = 2 * numSamples;
                 }
 
@@ -1559,13 +1535,14 @@ static int set_sample_rate(uint32_t sr)
 	double f;
 	int decimation;
 
-	if (sr < (2000000 / MAX_DECIMATION_FACTOR) || sr > 10000000) {
+	if (sr < 64000 || sr > 10000000) {
 		printf("sample rate %u is not supported\n", sr);
 		return -1;
 	}
 
 	decimation = 1;
-	if (sr < 2000000)
+
+	if (sr <= 10000000)
 	{
 		int c = 0;
 
@@ -2069,7 +2046,6 @@ void usage(void)
 		"\t-B Broadcast notch enable (default: disabled) - RSP1A/Duo/DX\n"
 		"\t-D DAB notch enable (default: disabled) - RSP1A/Duo/DX\n"
 		"\t-F RF notch enable (default: disabled) - RSP2\n"
-		"\t-b Bits used for conversion to 8bit (default:16 / values 12/13/14/15/16)\n"
 		"\t-v Verbose output (debug) enable (default: disabled)\n\n\n");
 	exit(1);
 }
@@ -2105,13 +2081,10 @@ int main(int argc, char **argv)
 
 	printf("rsp_tcp version %d.%d\n\n", RSP_TCP_VERSION_MAJOR, RSP_TCP_VERSION_MINOR);
 
-	while ((opt = getopt(argc, argv, "a:p:f:b:s:n:d:P:G:r:l::gwTvADBFRE")) != -1) {
+	while ((opt = getopt(argc, argv, "a:p:f:s:n:d:P:G:r:l::gwTvADBFRE")) != -1) {
 		switch (opt) {
 		case 'd':
 			device = atoi(optarg) - 1;
-			break;
-		case 'b':
-			sample_bits = atof(optarg);
 			break;
 		case 'P':
 			antenna = atoi(optarg);
