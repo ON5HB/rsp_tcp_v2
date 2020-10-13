@@ -576,7 +576,7 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 	if(!do_exit) {
                 struct llist *rpt = (struct llist*)malloc(sizeof(struct llist));
-		rpt->data = malloc(2 * numSamples * sizeof(short));
+		rpt->data = (char*)malloc(2 * numSamples);
 			// assemble the data
                         unsigned char *data;
                         data = (unsigned char*)rpt->data;
@@ -594,8 +594,8 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
                                         {xq2 = 8191;}
                                 else {xq2 = *xq;}
 
-                                        *(data++) = (((xi2 >> 6 ) &0xFF) +128.4);
-                                        *(data++) = (((xq2 >> 6 ) &0xFF) +128.4);
+                                          *(data++) = (unsigned char)((xi2 + 8192) /64);
+                                          *(data++) = (unsigned char)((xq2 + 8192) /64);
 
 			rpt->len = 2 * numSamples;
                 }
@@ -646,7 +646,7 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 	short xq2=0;
 	if(!do_exit) {
                 struct llist *rpt = (struct llist*)malloc(sizeof(struct llist));
-		rpt->data = malloc(2 * numSamples * sizeof(short));
+		rpt->data = (char*)malloc(2 * numSamples);
 			// assemble the data
                         unsigned char *data;
                         data = (unsigned char*)rpt->data;
@@ -664,8 +664,8 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
                                         {xq2 = 8191;}
                                 else {xq2 = *xq;}
 
-                                        *(data++) = (((xi2 >> 6 ) &0xFF) +128.4);
-                                        *(data++) = (((xq2 >> 6 ) &0xFF) +128.4);
+					*(data++) = (unsigned char)((xi2 + 8192) /64);
+                                        *(data++) = (unsigned char)((xq2 + 8192) /64);
 
                         rpt->len = 2 * numSamples;
                 }
