@@ -36,6 +36,7 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <fcntl.h>
+#include <math.h>
 #define CTRL_C_EVENT        0
 #define CTRL_BREAK_EVENT    1
 #define CTRL_CLOSE_EVENT    2
@@ -120,13 +121,10 @@ static int llbuf_num = 510;
 static int ignore_f_command = 0;
 static int ignore_s_command = 0;
 
-static int overload = 0;
+static int overload = 1;
 
 static volatile int do_exit = 0;
 static volatile int ctrlC_exit = 0;
-
-#define RSP_TCP_VERSION_MAJOR (2)
-#define RSP_TCP_VERSION_MINOR (0)
 
 #define MAX_DECIMATION_FACTOR (64)
 #define MAX_DEVS 8
@@ -154,6 +152,7 @@ static int enable_biastee = 0;
 static int enable_refout = 0;
 static uint8_t if_gr;
 static uint8_t lnastate;
+static int wortel = 0;
 
 sdrplay_api_DeviceT devices[MAX_DEVS];
 sdrplay_api_DeviceT *chosenDev;
@@ -555,6 +554,8 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 	unsigned int i;
 	short xi2=0;
 	short xq2=0;
+	unsigned char xi3=0;
+	unsigned char xq3=0;
 	if(params->fsChanged != 0)
 	{
 		fsc = params->fsChanged;
@@ -582,21 +583,26 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
                         data = (unsigned char*)rpt->data;
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
-
-				if (*xi < -8192)
-                        		{xi2 = -8192;}
+				if (*xi < -8191)
+                        		{xi2 = 0;}
 			        else if (*xi > 8191)
-                        		{xi2 = 8191;}
-			        else {xi2 = *xi;}
-				if (*xq < -8192)
-                                        {xq2 = -8192;}
+                        		{xi2 = 16383;}
+			        else {xi2 = *xi + 8192;}
+				if (*xq < -8191)
+                                        {xq2 = 0;}
                                 else if (*xq > 8191)
-                                        {xq2 = 8191;}
-                                else {xq2 = *xq;}
+                                        {xq2 = 16383;}
+                                else {xq2 = *xq + 8192;}
 
-                                          *(data++) = (unsigned char)((xi2 + 8192) /64);
-                                          *(data++) = (unsigned char)((xq2 + 8192) /64);
+			if (wortel == 0) {
+				xi3 = xi2 / 64;
+                                xq3 = xq2 / 64;}
+			else {
+				xi3 = sqrt(xi2*3.99);
+				xq3 = sqrt(xq2*3.99);}
 
+			*(data++) = xi3;
+			*(data++) = xq3;
 			rpt->len = 2 * numSamples;
                 }
 
@@ -644,6 +650,8 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 	unsigned int i;
 	short xi2=0;
 	short xq2=0;
+	unsigned char xi3=0;
+	unsigned char xq3=0;
 	if(!do_exit) {
                 struct llist *rpt = (struct llist*)malloc(sizeof(struct llist));
 		rpt->data = (char*)malloc(2 * numSamples);
@@ -652,21 +660,26 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
                         data = (unsigned char*)rpt->data;
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
-
-				if (*xi < -8192)
-                        		{xi2 = -8192;}
+				if (*xi < -8191)
+                        		{xi2 = 0;}
 			        else if (*xi > 8191)
-                        		{xi2 = 8191;}
-			        else {xi2 = *xi;}
-				if (*xq < -8192)
-                                        {xq2 = -8192;}
+                        		{xi2 = 16383;}
+			        else {xi2 = *xi + 8192;}
+				if (*xq < -8191)
+                                        {xq2 = 0;}
                                 else if (*xq > 8191)
-                                        {xq2 = 8191;}
-                                else {xq2 = *xq;}
+                                        {xq2 = 16383;}
+                                else {xq2 = *xq + 8192;}
 
-					*(data++) = (unsigned char)((xi2 + 8192) /64);
-                                        *(data++) = (unsigned char)((xq2 + 8192) /64);
+			if (wortel == 0) {
+				xi3 = xi2 / 64;
+                                xq3 = xq2 / 64;}
+			else {
+				xi3 = sqrt(xi2*3.99);
+				xq3 = sqrt(xq2*3.99);}
 
+			*(data++) = xi3;
+			*(data++) = xq3;
                         rpt->len = 2 * numSamples;
                 }
 
@@ -2002,7 +2015,7 @@ int init_rsp_device(unsigned int sr, unsigned int freq, int enable_bias_t, unsig
 	}
 
 	printf("started rx\n");
-	
+
 	// set bias-T
 	set_bias_t(enable_bias_t);
 
@@ -2030,23 +2043,25 @@ void usage(void)
 		"Usage:\t-a listen address\n"
 		"\t-p listen port (default: 1234)\n"
 		"\t-d RSP device to use (default: 1, first found)\n"
-		"\t-P Antenna Port select* (0/1/2, default: 0, Port A)\n"
+		"\t-P Antenna Port select (0/1/2, default: 0, Port A)\n"
 		"\t-T Bias-T enable* (default: disabled)\n"
 		"\t-R Refclk output enable* (default: disabled)\n"
 		"\t-f frequency to tune to [Hz] - If freq set centerfreq and progfreq is ignored!!\n"
 		"\t-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!\n"
-		"\t-G AGC setpoint (default: -24 / recommended values -10 to -40)\n"
-		"\t-g AGC disable (default: enabled)\n"
+		"\t-G AGC setpoint (default: -34 / recommended values 0 to -60)\n"
+		"\t-g AGC disable* (default: enabled)\n"
 		"\t-r rfgain only works if -g is set (default: -1 internal table / values 20-59)\n"
 		"\t-l lnalevel (default: 0 / typical used values 0-6 depending on the device)\n"
+		"\t-L Lineair or Logarithm conversion* (default: lin)\n"
 		"\t-w wideband enable* (default: disabled)\n"
 		"\t-n max number of linked list buffers to keep (default: 512)\n"
-		"\t-E RSP extended mode enable (default: rtl_tcp compatible mode)\n"
-		"\t-A AM notch enable (default: disabled) - Duo\n"
-		"\t-B Broadcast notch enable (default: disabled) - RSP1A/Duo/DX\n"
-		"\t-D DAB notch enable (default: disabled) - RSP1A/Duo/DX\n"
-		"\t-F RF notch enable (default: disabled) - RSP2\n"
-		"\t-v Verbose output (debug) enable (default: disabled)\n\n\n");
+		"\t-E RSP extended mode enable* (default: rtl_tcp compatible mode)\n"
+		"\t-A AM notch enable* (default: disabled) - Duo\n"
+		"\t-B Broadcast notch enable* (default: disabled) - RSP1A/Duo/DX\n"
+		"\t-D DAB notch enable* (default: disabled) - RSP1A/Duo/DX\n"
+		"\t-F RF notch enable* (default: disabled) - RSP2\n"
+		"\t-v Verbose output (debug) enable (default: disabled)\n\n\n"
+		"\n\t* marked options are switches they toggle on/off\n\n" );
 	exit(1);
 }
 
@@ -2079,9 +2094,9 @@ int main(int argc, char **argv)
 	struct sigaction sigact, sigign;
 #endif
 
-	printf("rsp_tcp version %d.%d\n\n", RSP_TCP_VERSION_MAJOR, RSP_TCP_VERSION_MINOR);
+	printf("rsp_tcp version %s.\n\n", SERVER_VERSION);
 
-	while ((opt = getopt(argc, argv, "a:p:f:s:n:d:P:G:r:l::gwTvADBFRE")) != -1) {
+	while ((opt = getopt(argc, argv, "a:p:f:s:n:d:P:G:r:l::LgwTvADBFRE")) != -1) {
 		switch (opt) {
 		case 'd':
 			device = atoi(optarg) - 1;
@@ -2111,6 +2126,9 @@ int main(int argc, char **argv)
 			break;
 		case 'w':
                         wideband = 1;
+                        break;
+		case 'L':
+                        wortel = 1;
                         break;
 		case 'r':
                         rfgain = atoi(optarg);
@@ -2314,6 +2332,7 @@ int main(int argc, char **argv)
 
 		setsockopt(s, SOL_SOCKET, SO_LINGER, (char *)&ling, sizeof(ling));
 
+		printf("Lineair or Logarithm mode set %d (0=Lin 1=Log)\n", wortel);
 		printf("client accepted!\n");
 
 		memset(&dongle_info, 0, sizeof(dongle_info));

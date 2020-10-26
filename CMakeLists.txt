@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(rsp_tcp VERSION 2.1.3)
+project(rsp_tcp VERSION 2.1.4)
 
 #find_library(USB_LIBRARY NAMES usb usb-1.0)
 find_package(Threads REQUIRED)
@@ -19,8 +19,8 @@ set(CMAKE_BUILD_TYPE Release)
 set(SOURCE_FILES rsp_tcp.c)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
-set(CMAKE_C_FLAGS "-Wall")
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb")
+set(CMAKE_C_FLAGS "-Wall -lm")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb -lm")
 add_definitions(-D_GNU_SOURCE)
 add_definitions(-DSERVER_VERSION="${PROJECT_VERSION}")
 include_directories(${LIBSDRPLAY_INCLUDE_DIRS})
