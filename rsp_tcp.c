@@ -134,7 +134,7 @@ static volatile int ctrlC_exit = 0;
 #define DEFAULT_SAMPLERATE (2048000)
 #define DEFAULT_AGC_SETPOINT -34
 #define DEFAULT_GAIN_REDUCTION 34
-#define DEFAULT_LNA_STATE 1
+#define DEFAULT_LNA_STATE 0
 #define DEFAULT_AGC_STATE 1
 #define RTLSDR_TUNER_R820T 5
 
@@ -451,7 +451,6 @@ static rsp_capabilities_t device_caps[] = {
 	},
 };
 
-static int extended_mode = 0;
 static int hardware_version = 0;
 static rsp_capabilities_t *hardware_caps = NULL;
 static rsp_model_t hardware_model = RSP_MODEL_UNKNOWN;
@@ -1264,10 +1263,10 @@ static int set_antenna_input(unsigned int antenna)
 static int set_notch_filters(unsigned int notch)
 {
 	int r;
-	unsigned int rf_notch = (notch & RSP_TCP_NOTCH_RF) ? 1 : 0;
-	unsigned int am_notch = (notch & RSP_TCP_NOTCH_AM) ? 1 : 0;
-	unsigned int dab_notch = (notch & RSP_TCP_NOTCH_DAB) ? 1 : 0;
-	unsigned int bc_notch = (notch & RSP_TCP_NOTCH_BROADCAST) ? 1 : 0;
+	unsigned int rf_notch = (notch & RSP_TCP_NOTCH_RF) ? 0 : 1;
+	unsigned int am_notch = (notch & RSP_TCP_NOTCH_AM) ? 0 : 1;
+	unsigned int dab_notch = (notch & RSP_TCP_NOTCH_DAB) ? 0 : 1;
+	unsigned int bc_notch = (notch & RSP_TCP_NOTCH_BROADCAST) ? 0 : 1;
 
 	switch (hardware_model)
 	{
@@ -1829,61 +1828,44 @@ static void *command_worker(void *arg)
 			set_bias_t((int)ntohl(cmd.param));
 			break;
 
-			// Extended mode commands
 		case RSP_TCP_COMMAND_SET_ANTENNA:
-			if (extended_mode) {
-				printf("set antenna input %d\n", ntohl(cmd.param));
-				set_antenna_input((unsigned int)ntohl(cmd.param));
-			}
+			printf("set antenna input %d\n", ntohl(cmd.param));
+			set_antenna_input((unsigned int)ntohl(cmd.param));
 			break;
 
 		case RSP_TCP_COMMAND_SET_NOTCH:
-			if (extended_mode) {
-				printf("set notch filter 0x%x\n", ntohl(cmd.param));
-				set_notch_filters((unsigned int)ntohl(cmd.param));
-			}
+			printf("set notch filter 0x%x\n", ntohl(cmd.param));
+			set_notch_filters((unsigned int)ntohl(cmd.param));
 			break;
 
 		case RSP_TCP_COMMAND_SET_LNASTATE:
-			if (extended_mode) {
-				printf("set LNAState %d\n", ntohl(cmd.param));
-				set_lna((unsigned int)ntohl(cmd.param));
-			}
+			printf("set LNAState %d\n", ntohl(cmd.param));
+			set_lna((unsigned int)ntohl(cmd.param));
 			break;
 
 		case RSP_TCP_COMMAND_SET_IF_GAIN_R:
-			if (extended_mode) {
-				printf("set if gain reduction %d\n", ntohl(cmd.param));
-				set_if_gain_reduction((int)ntohl(cmd.param));
-			}
+			printf("set if gain reduction %d\n", ntohl(cmd.param));
+			set_if_gain_reduction((int)ntohl(cmd.param));
 			break;
 
 		case RSP_TCP_COMMAND_SET_AGC:
-			if (extended_mode) {
-				printf("set agc %d\n", ntohl(cmd.param));
-				set_agc((unsigned int)ntohl(cmd.param));
-			}
+			printf("set agc %d\n", ntohl(cmd.param));
+			set_agc((unsigned int)ntohl(cmd.param));
 			break;
 
 		case RSP_TCP_COMMAND_SET_AGC_SETPOINT:
-			if (extended_mode) {
-				printf("set agc set point %d\n", ntohl(cmd.param));
-				set_agc_setpoint((int)ntohl(cmd.param));
-			}
+			printf("set agc set point %d\n", ntohl(cmd.param));
+			set_agc_setpoint((int)ntohl(cmd.param));
 			break;
 
 		case RSP_TCP_COMMAND_SET_BIAST:
-			if (extended_mode) {
-				printf("set bias-t %d\n", ntohl(cmd.param));
-				set_bias_t((unsigned int)ntohl(cmd.param));
-			}
+			printf("set bias-t %d\n", ntohl(cmd.param));
+			set_bias_t((unsigned int)ntohl(cmd.param));
 			break;
 
 		case RSP_TCP_COMMAND_SET_REFOUT:
-			if (extended_mode) {
-				printf("set reference out %d\n", ntohl(cmd.param));
-				set_refclock_output((unsigned int)ntohl(cmd.param));
-			}
+			printf("set reference out %d\n", ntohl(cmd.param));
+			set_refclock_output((unsigned int)ntohl(cmd.param));
 			break;
 
 		default:
@@ -2048,19 +2030,18 @@ void usage(void)
 		"\t-R Refclk output enable* (default: disabled)\n"
 		"\t-f frequency to tune to [Hz] - If freq set centerfreq and progfreq is ignored!!\n"
 		"\t-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!\n"
-		"\t-G AGC setpoint (default: -34 / recommended values 0 to -60)\n"
+		"\t-G AGC setpoint (default: -34 / recommended values -1 to -69 / 0 disabled)\n"
 		"\t-g AGC disable* (default: enabled)\n"
-		"\t-r rfgain only works if -g is set (default: -1 internal table / values 20-59)\n"
+		"\t-r rfgain only works if -g is set (default: 0 internal table / values 10-60)\n"
 		"\t-l lnalevel (default: 0 / typical used values 0-6 depending on the device)\n"
 		"\t-L Lineair or Logarithm conversion* (default: lin)\n"
 		"\t-w wideband enable* (default: disabled)\n"
 		"\t-n max number of linked list buffers to keep (default: 512)\n"
-		"\t-E RSP extended mode enable* (default: rtl_tcp compatible mode)\n"
-		"\t-A AM notch enable* (default: disabled) - Duo\n"
-		"\t-B Broadcast notch enable* (default: disabled) - RSP1A/Duo/DX\n"
-		"\t-D DAB notch enable* (default: disabled) - RSP1A/Duo/DX\n"
-		"\t-F RF notch enable* (default: disabled) - RSP2\n"
-		"\t-v Verbose output (debug) enable (default: disabled)\n\n\n"
+		"\t-A MW HiZ bandfilter* (default: enabled) - RspDuo\n"
+		"\t-B MW bandfilter* (default: enabled) - Rsp1a/2/2pro/duo/dx\n"
+		"\t-D DAB bandfilter* (default: enabled) - Rsp1a/duo/dx\n"
+		"\t-F FM bandnotch* (default: enabled) - Rsp1a/2/2pro/duo/dx\n"
+		"\t-v Verbose debug output* (default: disabled)\n\n\n"
 		"\n\t* marked options are switches they toggle on/off\n\n" );
 	exit(1);
 }
@@ -2096,7 +2077,7 @@ int main(int argc, char **argv)
 
 	printf("rsp_tcp version %s.\n\n", SERVER_VERSION);
 
-	while ((opt = getopt(argc, argv, "a:p:f:s:n:d:P:G:r:l::LgwTvADBFRE")) != -1) {
+	while ((opt = getopt(argc, argv, "a:p:f:s:n:d:P:G:r:l::LgwTvADBFR")) != -1) {
 		switch (opt) {
 		case 'd':
 			device = atoi(optarg) - 1;
@@ -2148,9 +2129,6 @@ int main(int argc, char **argv)
 			break;
 		case 'v':
 			verbose = 1;
-			break;
-		case 'E':
-			extended_mode = 1;
 			break;
 		case 'A':
 			notch |= RSP_TCP_NOTCH_AM;
@@ -2237,9 +2215,6 @@ int main(int argc, char **argv)
 
 	if (hardware_model == RSP_MODEL_UNKNOWN || hardware_caps == NULL) {
 		printf("unknown RSP model (hw ver %d)\n", hardware_version);
-
-		// force compatibility mode when model is unknown
-		extended_mode = 0;
 	}
 	else {
 		printf("detected RSP model '%s' (hw ver %d)\n", model_to_string(hardware_model), hardware_version);
@@ -2305,13 +2280,11 @@ int main(int argc, char **argv)
 		printf("rsp_tcp, an I/Q spectrum server for SDRPlay receivers - modified by Bas ON5HB for websdr.org \n");
 		printf("listening...\n");
 
-		if (!extended_mode) {
-			printf("Use the device argument 'rtl_tcp=%s:%d' in OsmoSDR "
-				"(gr-osmosdr) source\n"
-				"to receive samples in GRC and control "
-				"rtl_tcp parameters (frequency, gain, ...).\n",
-				addr, port);
-		}
+		printf("Use the device argument 'rtl_tcp=%s:%d' in OsmoSDR "
+			"(gr-osmosdr) source\n"
+			"to receive samples in GRC and control "
+			"rtl_tcp parameters (frequency, gain, ...).\n",
+			addr, port);
 		listen(listensocket, 1);
 
 		while (1) {
@@ -2346,31 +2319,28 @@ int main(int argc, char **argv)
 			printf("failed to send dongle information\n");
 		}
 
-		if (extended_mode)
-		{
-			rsp_extended_capabilities_t rsp_cap;
+		rsp_extended_capabilities_t rsp_cap;
 
-			printf("sending RSP extended capabilities structure\n");
+		printf("sending RSP extended capabilities structure\n");
 
-			memset(&rsp_cap, 0, sizeof(rsp_extended_capabilities_t));
-			memcpy(&rsp_cap.magic, RSP_CAPABILITIES_MAGIC, 4);
+		memset(&rsp_cap, 0, sizeof(rsp_extended_capabilities_t));
+		memcpy(&rsp_cap.magic, RSP_CAPABILITIES_MAGIC, 4);
 
-			rsp_cap.version = htonl(RSP_CAPABILITIES_VERSION);
-			rsp_cap.hardware_version = htonl(hardware_version);
-			rsp_cap.capabilities = htonl(hardware_caps->capabilities);
-			rsp_cap.sample_format = htonl(sample_format);
+		rsp_cap.version = htonl(RSP_CAPABILITIES_VERSION);
+		rsp_cap.hardware_version = htonl(hardware_version);
+		rsp_cap.capabilities = htonl(hardware_caps->capabilities);
+		rsp_cap.sample_format = htonl(sample_format);
 
-			rsp_cap.antenna_input_count = hardware_caps->antenna_input_count;
-			strcpy(rsp_cap.third_antenna_name, hardware_caps->third_antenna_name);
-			rsp_cap.third_antenna_freq_limit = hardware_caps->third_antenna_freq_limit;
-			rsp_cap.tuner_count = hardware_caps->tuner_count;
-			rsp_cap.ifgr_min = hardware_caps->min_ifgr;
-			rsp_cap.ifgr_max = hardware_caps->max_ifgr;
+		rsp_cap.antenna_input_count = hardware_caps->antenna_input_count;
+		strcpy(rsp_cap.third_antenna_name, hardware_caps->third_antenna_name);
+		rsp_cap.third_antenna_freq_limit = hardware_caps->third_antenna_freq_limit;
+		rsp_cap.tuner_count = hardware_caps->tuner_count;
+		rsp_cap.ifgr_min = hardware_caps->min_ifgr;
+		rsp_cap.ifgr_max = hardware_caps->max_ifgr;
 
-			r = send(s, (const char *)&rsp_cap, sizeof(rsp_cap), 0);
-			if (sizeof(rsp_cap) != r) {
-				printf("failed to send RSP capabilities information\n");
-			}
+		r = send(s, (const char *)&rsp_cap, sizeof(rsp_cap), 0);
+		if (sizeof(rsp_cap) != r) {
+			printf("failed to send RSP capabilities information\n");
 		}
 
 		// must start the tcp_worker before the first samples are available from the rx
