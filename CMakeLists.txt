@@ -19,14 +19,14 @@ set(CMAKE_BUILD_TYPE Release)
 set(SOURCE_FILES rsp_tcp.c)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
-set(CMAKE_C_FLAGS "-Wall -lm")
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb -lm")
+set(CMAKE_C_FLAGS "-Wall")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb")
 add_definitions(-D_GNU_SOURCE)
 add_definitions(-DSERVER_VERSION="${PROJECT_VERSION}")
 include_directories(${LIBSDRPLAY_INCLUDE_DIRS})
 
-add_executable(rsp_tcp ${SOURCE_FILES} )
-target_link_libraries(rsp_tcp ${LIBSDRPLAY_LIBRARIES} Threads::Threads)
+add_executable(rsp_tcp ${SOURCE_FILES})
+target_link_libraries(rsp_tcp ${LIBSDRPLAY_LIBRARIES} Threads::Threads -lm)
 install(TARGETS rsp_tcp DESTINATION bin)
 
 set(CPACK_GENERATOR DEB)
