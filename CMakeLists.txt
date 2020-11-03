@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(rsp_tcp VERSION 2.1.6)
+project(rsp_tcp VERSION 2.1.7)
 
 #find_library(USB_LIBRARY NAMES usb usb-1.0)
 find_package(Threads REQUIRED)

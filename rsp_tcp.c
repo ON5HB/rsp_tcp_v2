@@ -294,7 +294,7 @@ typedef struct {
 	const uint8_t* bandx_if_gains;
 	const uint8_t* band45_lna_states;
 	const uint8_t* band45_if_gains;
-	const uint8_t* lBAND_2000na_states;
+	const uint8_t* lband_lna_states;
 	const uint8_t* lband_if_gains;
 	const uint8_t* hiz_lna_states;
 	const uint8_t* hiz_if_gains;
@@ -323,7 +323,7 @@ static rsp_capabilities_t device_caps[] = {
 		.bandx_if_gains = rsp1_250_420_gains_ifgains,
 		.band45_lna_states = rsp1_420_1000_gains_lnastates,
 		.band45_if_gains = rsp1_420_1000_gains_ifgains,
-		.lBAND_2000na_states = rsp1_1000_2000_gains_lnastates,
+		.lband_lna_states = rsp1_1000_2000_gains_lnastates,
 		.lband_if_gains = rsp1_1000_2000_gains_ifgains,
 		.hiz_lna_states = NULL,
 		.hiz_if_gains = NULL,
@@ -352,7 +352,7 @@ static rsp_capabilities_t device_caps[] = {
 		.bandx_if_gains = rsp1a_250_420_gains_ifgains,
 		.band45_lna_states = rsp1a_420_1000_gains_lnastates,
 		.band45_if_gains = rsp1a_420_1000_gains_ifgains,
-		.lBAND_2000na_states = rsp1a_1000_2000_gains_lnastates,
+		.lband_lna_states = rsp1a_1000_2000_gains_lnastates,
 		.lband_if_gains = rsp1a_1000_2000_gains_ifgains,
 		.hiz_lna_states = NULL,
 		.hiz_if_gains = NULL,
@@ -382,7 +382,7 @@ static rsp_capabilities_t device_caps[] = {
 		.bandx_if_gains = rsp2_250_420_gains_ifgains,
 		.band45_lna_states = rsp2_420_1000_gains_lnastates,
 		.band45_if_gains = rsp2_420_1000_gains_ifgains,
-		.lBAND_2000na_states = rsp2_1000_2000_gains_lnastates,
+		.lband_lna_states = rsp2_1000_2000_gains_lnastates,
 		.lband_if_gains = rsp2_1000_2000_gains_ifgains,
 		.hiz_lna_states = rsp2_hiz_gains_lnastates,
 		.hiz_if_gains = rsp2_hiz_gains_ifgains,
@@ -414,7 +414,7 @@ static rsp_capabilities_t device_caps[] = {
 		.bandx_if_gains = rspduo_250_420_gains_ifgains,
 		.band45_lna_states = rspduo_420_1000_gains_lnastates,
 		.band45_if_gains = rspduo_420_1000_gains_ifgains,
-		.lBAND_2000na_states = rspduo_1000_2000_gains_lnastates,
+		.lband_lna_states = rspduo_1000_2000_gains_lnastates,
 		.lband_if_gains = rspduo_1000_2000_gains_ifgains,
 		.hiz_lna_states = rspduo_hiz_gains_lnastates,
 		.hiz_if_gains = rspduo_hiz_gains_ifgains,
@@ -444,13 +444,14 @@ static rsp_capabilities_t device_caps[] = {
 		.bandx_if_gains = rspdx_250_420_gains_ifgains,
 		.band45_lna_states = rspdx_420_1000_gains_lnastates,
 		.band45_if_gains = rspdx_420_1000_gains_ifgains,
-		.lBAND_2000na_states = rspdx_1000_2000_gains_lnastates,
+		.lband_lna_states = rspdx_1000_2000_gains_lnastates,
 		.lband_if_gains = rspdx_1000_2000_gains_ifgains,
 		.hiz_lna_states = rspdx_hiz_gains_lnastates,
 		.hiz_if_gains = rspdx_hiz_gains_ifgains,
 	},
 };
 
+static int extended_mode = 1;
 static int hardware_version = 0;
 static rsp_capabilities_t *hardware_caps = NULL;
 static rsp_model_t hardware_model = RSP_MODEL_UNKNOWN;
@@ -911,7 +912,7 @@ static int gain_index_to_gain(unsigned int index, uint8_t *if_gr_out, uint8_t *l
 
 	case BAND_2000:
 		if_gains = hardware_caps->lband_if_gains;
-		lnastates = hardware_caps->lBAND_2000na_states;
+		lnastates = hardware_caps->lband_lna_states;
 		break;
 
 	case BAND_0_60_HIZ:
@@ -1216,8 +1217,8 @@ static int set_antenna_input(unsigned int antenna)
 			{
 				if (current_frequency < 30000000)
 				{
-					chParams->rsp2TunerParams.amPortSel = sdrplay_api_Rsp2_AMPORT_1;
-					reason1 = sdrplay_api_Update_Rsp2_AmPortSelect;
+				chParams->rsp2TunerParams.amPortSel = sdrplay_api_Rsp2_AMPORT_1;
+				reason1 = sdrplay_api_Update_Rsp2_AmPortSelect;
 				}
 			}
 			else // RSP_MODEL_RSPDX
@@ -1239,7 +1240,7 @@ static int set_antenna_input(unsigned int antenna)
 
 			current_band = new_band;
 
-			gain_index_to_gain(last_gain_idx, &if_gr, &lnastate);			
+			gain_index_to_gain(last_gain_idx, &if_gr, &lnastate);
 			gain_reduction = if_gr;
 			lna_state = lnastate;
 		}
@@ -1825,12 +1826,12 @@ static void *command_worker(void *arg)
 			break;
 		case 0x0e:
 			printf("set bias tee %d\n", ntohl(cmd.param));
-			set_bias_t((int)ntohl(cmd.param));
+			// set_bias_t((int)ntohl(cmd.param));
 			break;
 
 		case RSP_TCP_COMMAND_SET_ANTENNA:
 			printf("set antenna input %d\n", ntohl(cmd.param));
-			set_antenna_input((unsigned int)ntohl(cmd.param));
+			// set_antenna_input((unsigned int)ntohl(cmd.param));
 			break;
 
 		case RSP_TCP_COMMAND_SET_NOTCH:
@@ -2319,28 +2320,31 @@ int main(int argc, char **argv)
 			printf("failed to send dongle information\n");
 		}
 
-		rsp_extended_capabilities_t rsp_cap;
+		if (extended_mode)
+		{
+			rsp_extended_capabilities_t rsp_cap;
 
-		printf("sending RSP extended capabilities structure\n");
+			printf("sending RSP extended capabilities structure\n");
 
-		memset(&rsp_cap, 0, sizeof(rsp_extended_capabilities_t));
-		memcpy(&rsp_cap.magic, RSP_CAPABILITIES_MAGIC, 4);
+			memset(&rsp_cap, 0, sizeof(rsp_extended_capabilities_t));
+			memcpy(&rsp_cap.magic, RSP_CAPABILITIES_MAGIC, 4);
 
-		rsp_cap.version = htonl(RSP_CAPABILITIES_VERSION);
-		rsp_cap.hardware_version = htonl(hardware_version);
-		rsp_cap.capabilities = htonl(hardware_caps->capabilities);
-		rsp_cap.sample_format = htonl(sample_format);
+			rsp_cap.version = htonl(RSP_CAPABILITIES_VERSION);
+			rsp_cap.hardware_version = htonl(hardware_version);
+			rsp_cap.capabilities = htonl(hardware_caps->capabilities);
+			rsp_cap.sample_format = htonl(sample_format);
 
-		rsp_cap.antenna_input_count = hardware_caps->antenna_input_count;
-		strcpy(rsp_cap.third_antenna_name, hardware_caps->third_antenna_name);
-		rsp_cap.third_antenna_freq_limit = hardware_caps->third_antenna_freq_limit;
-		rsp_cap.tuner_count = hardware_caps->tuner_count;
-		rsp_cap.ifgr_min = hardware_caps->min_ifgr;
-		rsp_cap.ifgr_max = hardware_caps->max_ifgr;
+			rsp_cap.antenna_input_count = hardware_caps->antenna_input_count;
+			strcpy(rsp_cap.third_antenna_name, hardware_caps->third_antenna_name);
+			rsp_cap.third_antenna_freq_limit = hardware_caps->third_antenna_freq_limit;
+			rsp_cap.tuner_count = hardware_caps->tuner_count;
+			rsp_cap.ifgr_min = hardware_caps->min_ifgr;
+			rsp_cap.ifgr_max = hardware_caps->max_ifgr;
 
-		r = send(s, (const char *)&rsp_cap, sizeof(rsp_cap), 0);
-		if (sizeof(rsp_cap) != r) {
-			printf("failed to send RSP capabilities information\n");
+			r = send(s, (const char *)&rsp_cap, sizeof(rsp_cap), 0);
+			if (sizeof(rsp_cap) != r) {
+				printf("failed to send RSP capabilities information\n");
+			}
 		}
 
 		// must start the tcp_worker before the first samples are available from the rx
