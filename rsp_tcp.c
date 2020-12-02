@@ -152,7 +152,6 @@ static int enable_biastee = 0;
 static int enable_refout = 0;
 static uint8_t if_gr;
 static uint8_t lnastate;
-static int wortel = 0;
 
 sdrplay_api_DeviceT devices[MAX_DEVS];
 sdrplay_api_DeviceT *chosenDev;
@@ -554,8 +553,6 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 	unsigned int i;
 	short xi2=0;
 	short xq2=0;
-	unsigned char xi3=0;
-	unsigned char xq3=0;
 	if(params->fsChanged != 0)
 	{
 		fsc = params->fsChanged;
@@ -583,26 +580,21 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
                         data = (unsigned char*)rpt->data;
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
+
 				if (*xi < -8191)
-                        		{xi2 = 0;}
-			        else if (*xi > 8191)
-                        		{xi2 = 16383;}
-			        else {xi2 = *xi + 8192;}
-				if (*xq < -8191)
-                                        {xq2 = 0;}
+                                        {xi2 = -8192;}
+                                else if (*xi > 8191)
+                                        {xi2 = 8191;}
+                                else {xi2 = *xi;}
+                                if (*xq < -8191)
+                                        {xq2 = -8192;}
                                 else if (*xq > 8191)
-                                        {xq2 = 16383;}
-                                else {xq2 = *xq + 8192;}
+                                        {xq2 = 8191;}
+                                else {xq2 = *xq;}
 
-			if (wortel == 0) {
-				xi3 = xi2 / 64;
-                                xq3 = xq2 / 64;}
-			else {
-				xi3 = sqrt(xi2*3.99);
-				xq3 = sqrt(xq2*3.99);}
+                                *(data++) = (unsigned char)((xi2 << 2) >> 8) + 128.5;
+                                *(data++) = (unsigned char)((xq2 << 2) >> 8) + 128.5;
 
-			*(data++) = xi3;
-			*(data++) = xq3;
 			rpt->len = 2 * numSamples;
                 }
 
@@ -650,8 +642,7 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 	unsigned int i;
 	short xi2=0;
 	short xq2=0;
-	unsigned char xi3=0;
-	unsigned char xq3=0;
+
 	if(!do_exit) {
                 struct llist *rpt = (struct llist*)malloc(sizeof(struct llist));
 		rpt->data = (char*)malloc(2 * numSamples);
@@ -660,26 +651,21 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
                         data = (unsigned char*)rpt->data;
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
+
 				if (*xi < -8191)
-                        		{xi2 = 0;}
-			        else if (*xi > 8191)
-                        		{xi2 = 16383;}
-			        else {xi2 = *xi + 8192;}
-				if (*xq < -8191)
-                                        {xq2 = 0;}
+                                        {xi2 = -8192;}
+                                else if (*xi > 8191)
+                                        {xi2 = 8191;}
+                                else {xi2 = *xi;}
+                                if (*xq < -8191)
+                                        {xq2 = -8192;}
                                 else if (*xq > 8191)
-                                        {xq2 = 16383;}
-                                else {xq2 = *xq + 8192;}
+                                        {xq2 = 8191;}
+                                else {xq2 = *xq;}
 
-			if (wortel == 0) {
-				xi3 = xi2 / 64;
-                                xq3 = xq2 / 64;}
-			else {
-				xi3 = sqrt(xi2*3.99);
-				xq3 = sqrt(xq2*3.99);}
+                                *(data++) = (unsigned char)((xi2 << 2) >> 8) + 128.5;
+                                *(data++) = (unsigned char)((xq2 << 2) >> 8) + 128.5;
 
-			*(data++) = xi3;
-			*(data++) = xq3;
                         rpt->len = 2 * numSamples;
                 }
 
@@ -1131,8 +1117,8 @@ static int set_antenna_input(unsigned int antenna)
 		sdrplay_api_ReasonForUpdateExtension1T reason2 = sdrplay_api_Update_Ext1_None;
 		switch (antenna)
 		{
-		case RSP_TCP_ANTENNA_INPUT_A:
-
+//		case RSP_TCP_ANTENNA_INPUT_A:
+		case 0:
 			if (hardware_model == RSP_MODEL_RSP2)
 			{
 				chParams->rsp2TunerParams.amPortSel = sdrplay_api_Rsp2_AMPORT_2;
@@ -1164,8 +1150,8 @@ static int set_antenna_input(unsigned int antenna)
 
 			break;
 
-		case RSP_TCP_ANTENNA_INPUT_B:
-
+//		case RSP_TCP_ANTENNA_INPUT_B:
+		case 1:
 			if (hardware_model == RSP_MODEL_RSP2)
 			{
 				deviceParams->rxChannelA->rsp2TunerParams.amPortSel = sdrplay_api_Rsp2_AMPORT_2;
@@ -1192,8 +1178,8 @@ static int set_antenna_input(unsigned int antenna)
 
 			break;
 
-		case RSP_TCP_ANTENNA_INPUT_HIZ:
-
+//		case RSP_TCP_ANTENNA_INPUT_HIZ:
+		case 2:
 			if (hardware_model == RSP_MODEL_RSPDUO)
 			{
 				if (current_frequency < 30000000)
@@ -2035,7 +2021,6 @@ void usage(void)
 		"\t-g AGC disable* (default: enabled)\n"
 		"\t-r rfgain only works if -g is set (default: 0 internal table / values 10-60)\n"
 		"\t-l lnalevel (default: 0 / typical used values 0-6 depending on the device)\n"
-		"\t-L Lineair or Logarithm conversion* (default: lin)\n"
 		"\t-w wideband enable* (default: disabled)\n"
 		"\t-n max number of linked list buffers to keep (default: 512)\n"
 		"\t-A MW HiZ bandfilter* (default: enabled) - RspDuo\n"
@@ -2078,7 +2063,7 @@ int main(int argc, char **argv)
 
 	printf("rsp_tcp version %s.\n\n", SERVER_VERSION);
 
-	while ((opt = getopt(argc, argv, "a:p:f:s:n:d:P:G:r:l::LgwTvADBFR")) != -1) {
+	while ((opt = getopt(argc, argv, "a:p:f:s:n:d:P:G:r:l::gwTvADBFR")) != -1) {
 		switch (opt) {
 		case 'd':
 			device = atoi(optarg) - 1;
@@ -2108,9 +2093,6 @@ int main(int argc, char **argv)
 			break;
 		case 'w':
                         wideband = 1;
-                        break;
-		case 'L':
-                        wortel = 1;
                         break;
 		case 'r':
                         rfgain = atoi(optarg);
@@ -2306,7 +2288,6 @@ int main(int argc, char **argv)
 
 		setsockopt(s, SOL_SOCKET, SO_LINGER, (char *)&ling, sizeof(ling));
 
-		printf("Lineair or Logarithm mode set %d (0=Lin 1=Log)\n", wortel);
 		printf("client accepted!\n");
 
 		memset(&dongle_info, 0, sizeof(dongle_info));
