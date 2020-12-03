@@ -38,7 +38,9 @@ Usage:
 	
 	-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!
 	
-	-w wideband enable* (default: disabled)
+	-W wideband enable (default: 2 / values: 0 small / 1 wide / 2 = optimised)
+	
+	-E Edgefilter digital enable* (default: disabled)
 	
 	-r rfgain only works if -g is set (default: -1 internal table / values 20-59)
 	
@@ -49,20 +51,17 @@ Usage:
 	-g AGC disable (default: enabled)
 	
 	-n max number of linked list buffers to keep (default: 512)
+			
+	-A MW HiZ bandfilter* (default: enabled) - RspDuo
 	
-	-E RSP extended mode enable (default: rtl_tcp compatible mode)
-	
-	-A AM notch enable (default: disabled) - Duo
-	
-	-B Broadcast notch enable (default: disabled) - RSP1A/Duo/DX
-	
-	-D DAB notch enable (default: disabled) - RSP1A/Duo/DX
-	
-	-F RF notch enable (default: disabled) - RSP2
-	
-	-b Bits used for conversion to 8bit (default:14 / values 12/13/14/15/16/99)
-	
-	-v Verbose output (debug) enable (default: disabled)
+	-B MW bandfilter* (default: enabled) - Rsp1a/2/2pro/duo/dx
+        
+	-D DAB bandfilter* (default: enabled) - Rsp1a/duo/dx
+        
+	-F FM bandnotch* (default: enabled) - Rsp1a/2/2pro/duo/dx
+        
+	-v Verbose debug output* (default: disabled)
+
 
 
 ## USAGE
@@ -105,6 +104,7 @@ Usage:
  - Version 2.1.0: AGC setpoint, set default values for all boxes, should work instantly, probably only AGC-setpoint and LNA needed to optimise for you.
  - Version 2.1.1: Some commandline options where not working like -d, it would fail to init the correct box.
  - Version 2.1.8: Fixed conversion errors.
+ - Version 2.2.0: Fixed decimate and bandfilters, also added auto-optimised for eacht band (=default) driver not 100% tested, just updated.
 
 ## CREDITS
  - [Open Source Mobile Communications (OSMOCOM)](https://github.com/osmocom/rtl-sdr.git) team for the original rtl_tcp code
