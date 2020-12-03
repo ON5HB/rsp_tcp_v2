@@ -142,7 +142,8 @@ static int bwType = sdrplay_api_BW_Undefined;
 static int last_gain_idx = 0;
 static int verbose = 0;
 static uint8_t max_lnastate;
-static int wideband = 0;
+static int wideband = 2;
+static int edgefilter = 0;
 static int rfgain = 0;
 static int lnalevel = -1;
 static int agcenable = 1; // 1=on - 0=off AGC
@@ -152,6 +153,7 @@ static int enable_biastee = 0;
 static int enable_refout = 0;
 static uint8_t if_gr;
 static uint8_t lnastate;
+static uint8_t deci = 1;
 
 sdrplay_api_DeviceT devices[MAX_DEVS];
 sdrplay_api_DeviceT *chosenDev;
@@ -695,12 +697,12 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 			}
 
 			cur->next = rpt;
-			if (verbose) {
-				if (num_queued > global_numq)
-					printf("ll+, now %d\n", num_queued);
-				else if (num_queued < global_numq)
-					printf("ll-, now %d\n", num_queued);
-			}
+			//if (verbose) {
+			//	if (num_queued > global_numq)
+			//		printf("ll+, now %d\n", num_queued);
+			//	else if (num_queued < global_numq)
+			//		printf("ll-, now %d\n", num_queued);
+			//}
 			global_numq = num_queued;
 		}
 		pthread_cond_signal(&cond);
@@ -1532,145 +1534,105 @@ static int set_sample_rate(uint32_t sr)
 {
 	int r;
 	double f;
-	int decimation;
 
-	if (sr < 64000 || sr > 10000000) {
-		printf("sample rate %u is not supported\n", sr);
-		return -1;
-	}
+	if (sr < (2000000 / MAX_DECIMATION_FACTOR) || sr > 10000000) {
+                fprintf(stderr, "sample rate %u is not supported\n", sr);
+                return -1;
+        }
 
-	decimation = 1;
+        if (sr < 2000000)
+        {
+                int c = 0;
 
-	if (sr <= 10000000)
-	{
-		int c = 0;
-
-		// Find best decimation factor
-		while (sr * (1 << c) < 2000000 && (1 << c) < MAX_DECIMATION_FACTOR) {
-			c++;
-		}
-
-		decimation = 1 << c;
-
-		if (sr >= 7000000)
-                {
-                        if (wideband == 1) bwType = sdrplay_api_BW_8_000;
-                        else bwType = sdrplay_api_BW_6_000;
-                }
-		else if (sr >= 6000000 && sr < 7000000)
-                {
-                        if (wideband == 1) bwType = sdrplay_api_BW_7_000;
-                        else bwType = sdrplay_api_BW_6_000;
+                // Find best decimation factor
+                while (sr * (1 << c) < 2000000 && (1 << c) < MAX_DECIMATION_FACTOR) {
+                        c++;
                 }
 
-		else if (sr >= 5000000 && sr < 6000000)
+                deci = 1 << c;
+
+		if (sr >= 1536000 && sr < 2000000)
                 {
-                        if (wideband == 1) bwType = sdrplay_api_BW_6_000;
-                        else bwType = sdrplay_api_BW_5_000;
-                }
-		else if (sr >= 2000000 && sr < 5000000)
-                {
-			if (wideband == 1) bwType = sdrplay_api_BW_5_000;
-                        else bwType = sdrplay_api_BW_1_536;
-                }
-		else if (sr >= 600000 && sr < 1536000)
-                {
-			if (wideband == 1) bwType = sdrplay_api_BW_1_536;
-                        else bwType = sdrplay_api_BW_0_600;
-                }
-		else if (sr >= 300000 && sr < 600000)
-                {
-			if (wideband == 1) bwType = sdrplay_api_BW_0_600;
-                        else bwType = sdrplay_api_BW_0_300;
-                }
-		else if (sr >= 200000 && sr < 300000)
-                {
-			if (wideband == 1) bwType = sdrplay_api_BW_0_300;
-                        else bwType = sdrplay_api_BW_0_200;
-                }
-		else if (sr <= 200000)
-                {
-                        bwType = sdrplay_api_BW_0_200;
-                }
-	}
-	else
-	{
-		if (sr == 2048000 || sr == 2880000)
-                {
-                        decimation = 1;
                         if (wideband == 1) bwType = sdrplay_api_BW_5_000;
                         else bwType = sdrplay_api_BW_1_536;
                 }
-		else if (sr == 1024000 || sr == 1536000)
+                else
+                if (sr >= 600000 && sr < 1536000)
                 {
-                        decimation = 2;
-			if (wideband == 1) bwType = sdrplay_api_BW_1_536;
+                        if (wideband >= 1) bwType = sdrplay_api_BW_1_536;
                         else bwType = sdrplay_api_BW_0_600;
                 }
-		else if (sr == 768000)
+                else
+                if (sr >= 300000 && sr < 600000)
                 {
-                        decimation = 4;
-			if (wideband == 1) bwType = sdrplay_api_BW_1_536;
-                        else bwType = sdrplay_api_BW_0_600;
-                }
-		else if (sr == 512000)
-                {
-                        decimation = 4;
-                        if (wideband == 1) bwType = sdrplay_api_BW_0_600;
+                        if (wideband >= 1) bwType = sdrplay_api_BW_0_600;
                         else bwType = sdrplay_api_BW_0_300;
                 }
-		else if (sr == 384000)
+                else
                 {
-                        decimation = 8;
-			if (wideband == 1) bwType = sdrplay_api_BW_0_600;
-                        else bwType = sdrplay_api_BW_0_300;
-                }
-                else if (sr == 256000)
-                {
-                        decimation = 8;
-			if (wideband == 1) bwType = sdrplay_api_BW_0_300;
+                        if (wideband >= 1 && sr >= 256000) bwType = sdrplay_api_BW_0_300;
                         else bwType = sdrplay_api_BW_0_200;
                 }
-                else if (sr == 128000 || sr == 192000)
+        }
+	else
+        {
+                if (sr >= 8000000 && sr <= 10000000)
                 {
-                        decimation = 16;
-                        bwType = sdrplay_api_BW_0_200;
+                        bwType = sdrplay_api_BW_8_000;
                 }
-                else if (sr == 64000 || sr == 96000)
+                else
+                if (sr >= 7000000 && sr < 8000000)
                 {
-                        decimation = 32;
-                        bwType = sdrplay_api_BW_0_200;
+                        bwType = sdrplay_api_BW_7_000;
                 }
-		else
+                else
+                if (sr >= 6000000 && sr < 7000000)
                 {
-                printf("sample rate %u is not supported\n", sr);
-                return -1;
+                        bwType = sdrplay_api_BW_6_000;
                 }
-	}
+                else
+                if (sr >= 5000000 && sr < 6000000)
+                {
+                        bwType = sdrplay_api_BW_5_000;
+                }
+                else
+                if (sr >= 2500000 && sr < 5000000)
+                {
+                        // deci = 2;
+                        if (wideband >= 1 && sr >= 2880000) bwType = sdrplay_api_BW_5_000;
+                        else bwType = sdrplay_api_BW_1_536;
+                }
+                else
+                {
+                        if (wideband == 1 && sr >= 2048000) bwType = sdrplay_api_BW_5_000;
+                        else bwType = sdrplay_api_BW_1_536;
 
-	f = (double)(sr * decimation);
+                }
+        }
 
-	if (decimation == 1 && wideband == 0) {
-                chParams->ctrlParams.decimation.enable = 1;
-                chParams->ctrlParams.decimation.decimationFactor = 1;
+	f = (double)(sr * deci);
+
+	if (deci == 1 && edgefilter == 0) {
+                chParams->ctrlParams.decimation.enable = 0;
+                chParams->ctrlParams.decimation.decimationFactor = 0;
                 chParams->ctrlParams.decimation.wideBandSignal = 0;
 
         }
-	else if (decimation == 1 && wideband == 1) {
+	else if (deci >= 1 && edgefilter == 0) {
                 chParams->ctrlParams.decimation.enable = 1;
-                chParams->ctrlParams.decimation.decimationFactor = 1;
-                chParams->ctrlParams.decimation.wideBandSignal = 1;
+                chParams->ctrlParams.decimation.decimationFactor = deci;
+                chParams->ctrlParams.decimation.wideBandSignal = 0;
         }
-	else {
+	else if (deci >= 1 && edgefilter >= 1){
 		chParams->ctrlParams.decimation.enable = 1;
-		chParams->ctrlParams.decimation.decimationFactor = decimation;
-		chParams->ctrlParams.decimation.wideBandSignal = 0;
+		chParams->ctrlParams.decimation.decimationFactor = deci;
+		chParams->ctrlParams.decimation.wideBandSignal = 1;
 	}
 
 	chParams->tunerParams.bwType = bwType;
 	deviceParams->devParams->fsFreq.fsHz = f;
 
-	printf("device SR %.2f, decimate %d, output SR %u, IF Filter BW %d kHz\n", f, decimation, sr, bwType);
+	printf("device SR %.2f, decimate %d, output SR %u, IF Filter BW %d kHz\n", f, deci, sr, bwType);
 
 	fsc = 0;
 	int count = 0;
@@ -1756,9 +1718,9 @@ static void *command_worker(void *arg)
 			//			printf("set freq %d\n", ntohl(cmd.param));
 			//			set_freq(ntohl(cmd.param));
 			if (ignore_f_command) {
-				printf("set freq %d ignored because -f used at commandline\n", ntohl(cmd.param));
+				printf("set frequency %dHz ignored because -f used at commandline\n", ntohl(cmd.param));
 			} else {
-				printf("set freq %d\n", ntohl(cmd.param));
+				printf("set frequency %dHz\n", ntohl(cmd.param));
 				set_freq(ntohl(cmd.param));
 			}
 			break;
@@ -2021,7 +1983,8 @@ void usage(void)
 		"\t-g AGC disable* (default: enabled)\n"
 		"\t-r rfgain only works if -g is set (default: 0 internal table / values 10-60)\n"
 		"\t-l lnalevel (default: 0 / typical used values 0-6 depending on the device)\n"
-		"\t-w wideband enable* (default: disabled)\n"
+		"\t-W wideband enable (default: 2 / values: 0 small / 1 wide / 2 = optimised)\n"
+		"\t-E Edgefilter digital enable* (default: disabled)\n"
 		"\t-n max number of linked list buffers to keep (default: 512)\n"
 		"\t-A MW HiZ bandfilter* (default: enabled) - RspDuo\n"
 		"\t-B MW bandfilter* (default: enabled) - Rsp1a/2/2pro/duo/dx\n"
@@ -2061,9 +2024,7 @@ int main(int argc, char **argv)
 	struct sigaction sigact, sigign;
 #endif
 
-	printf("rsp_tcp version %s.\n\n", SERVER_VERSION);
-
-	while ((opt = getopt(argc, argv, "a:p:f:s:n:d:P:G:r:l::gwTvADBFR")) != -1) {
+	while ((opt = getopt(argc, argv, "a:p:f:s:n:d:P:G:r:l:W:gETvADBFR")) != -1) {
 		switch (opt) {
 		case 'd':
 			device = atoi(optarg) - 1;
@@ -2091,8 +2052,11 @@ int main(int argc, char **argv)
 		case 'n':
 			llbuf_num = atoi(optarg);
 			break;
-		case 'w':
-                        wideband = 1;
+		case 'W':
+                        wideband = atoi(optarg);
+                        break;
+                case 'E':
+                        edgefilter = 1;
                         break;
 		case 'r':
                         rfgain = atoi(optarg);
@@ -2289,6 +2253,7 @@ int main(int argc, char **argv)
 		setsockopt(s, SOL_SOCKET, SO_LINGER, (char *)&ling, sizeof(ling));
 
 		printf("client accepted!\n");
+                printf("Edgefilter set %d (0=off 1=on)\n", edgefilter);
 
 		memset(&dongle_info, 0, sizeof(dongle_info));
 		memcpy(&dongle_info.magic, "RTL0", 4);
