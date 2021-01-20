@@ -132,8 +132,8 @@ static volatile int ctrlC_exit = 0;
 #define DEFAULT_BW_T sdrplay_api_BW_1_536
 #define DEFAULT_FREQUENCY (100000000)
 #define DEFAULT_SAMPLERATE (2048000)
-#define DEFAULT_AGC_SETPOINT -34
-#define DEFAULT_GAIN_REDUCTION 34
+#define DEFAULT_AGC_SETPOINT -40
+#define DEFAULT_GAIN_REDUCTION 44
 #define DEFAULT_LNA_STATE 0
 #define DEFAULT_AGC_STATE 1
 #define RTLSDR_TUNER_R820T 5
@@ -583,19 +583,19 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
 
-				if (*xi < -8191)
-                                        {xi2 = -8192;}
-                                else if (*xi > 8191)
-                                        {xi2 = 8191;}
+				if (*xi < -1536)
+                                        {xi2 = -1536;}
+                                else if (*xi > 1535)
+                                        {xi2 = 1535;}
                                 else {xi2 = *xi;}
-                                if (*xq < -8191)
-                                        {xq2 = -8192;}
-                                else if (*xq > 8191)
-                                        {xq2 = 8191;}
+                                if (*xq < -1536)
+                                        {xq2 = -1536;}
+                                else if (*xq > 1535)
+                                        {xq2 = 1535;}
                                 else {xq2 = *xq;}
 
-                                *(data++) = (unsigned char)((xi2 << 2) >> 8) + 128.5;
-                                *(data++) = (unsigned char)((xq2 << 2) >> 8) + 128.5;
+				*(data++) = (unsigned char)(xi2 / 12) + 128.5;
+                                *(data++) = (unsigned char)(xq2 / 12) + 128.5;
 
 			rpt->len = 2 * numSamples;
                 }
@@ -652,21 +652,23 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
                         unsigned char *data;
                         data = (unsigned char*)rpt->data;
 
-			for (i = 0; i < numSamples; i++, xi++, xq++) {
+				for (i = 0; i < numSamples; i++, xi++, xq++) {
 
-				if (*xi < -8191)
-                                        {xi2 = -8192;}
-                                else if (*xi > 8191)
-                                        {xi2 = 8191;}
+                                if (*xi < -1536)
+                                        {xi2 = -1536;}
+                                else if (*xi > 1535)
+                                        {xi2 = 1535;}
                                 else {xi2 = *xi;}
-                                if (*xq < -8191)
-                                        {xq2 = -8192;}
-                                else if (*xq > 8191)
-                                        {xq2 = 8191;}
+                                if (*xq < -1536)
+                                        {xq2 = -1536;}
+                                else if (*xq > 1535)
+                                        {xq2 = 1535;}
                                 else {xq2 = *xq;}
 
-                                *(data++) = (unsigned char)((xi2 << 2) >> 8) + 128.5;
-                                *(data++) = (unsigned char)((xq2 << 2) >> 8) + 128.5;
+                                *(data++) = (unsigned char)(xi2 / 12) + 128.5;
+                                *(data++) = (unsigned char)(xq2 / 12) + 128.5;
+
+
 
                         rpt->len = 2 * numSamples;
                 }
