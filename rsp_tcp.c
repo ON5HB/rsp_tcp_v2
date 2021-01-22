@@ -166,17 +166,17 @@ sdrplay_api_RxChannelParamsT *chParams;
 #define GAIN_STEPS (1) // Websdr.org has no steps, so if you need more see remmed table below, 29 steps.
 
 const uint8_t rsp1_0_60_gains_lnastates[]       = {  0 };
-const uint8_t rsp1_0_60_gains_ifgains[]         = { 34 };
+const uint8_t rsp1_0_60_gains_ifgains[]         = { 44 };
 const uint8_t rsp1_60_120_gains_lnastates[]      = {  0 };
-const uint8_t rsp1_60_120_gains_ifgains[]        = { 34 };
+const uint8_t rsp1_60_120_gains_ifgains[]        = { 44 };
 const uint8_t rsp1_120_250_gains_lnastates[]    = {  0 };
-const uint8_t rsp1_120_250_gains_ifgains[]      = { 34 };
+const uint8_t rsp1_120_250_gains_ifgains[]      = { 44 };
 const uint8_t rsp1_250_420_gains_lnastates[]    = {  0 };
-const uint8_t rsp1_250_420_gains_ifgains[]      = { 34 };
+const uint8_t rsp1_250_420_gains_ifgains[]      = { 44 };
 const uint8_t rsp1_420_1000_gains_lnastates[]   = {  0 };
-const uint8_t rsp1_420_1000_gains_ifgains[]     = { 34 };
+const uint8_t rsp1_420_1000_gains_ifgains[]     = { 44 };
 const uint8_t rsp1_1000_2000_gains_lnastates[]    = { 0 };
-const uint8_t rsp1_1000_2000_gains_ifgains[]      = { 34 };
+const uint8_t rsp1_1000_2000_gains_ifgains[]      = { 44 };
 
 //These do not work for websdr.org!!
 //const uint8_t rsp1a_0_60_gains_lnastates[]      = {  6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 3, 3, 3, 3, 3, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -196,62 +196,62 @@ const uint8_t rsp1_1000_2000_gains_ifgains[]      = { 34 };
 
 //!!!! I DO NOT HAVE OTHERBOXES THEN RSP1A, SO I CAN NOT TEST STATES FOR OTHER DEVICES !!!!
 const uint8_t rsp1a_0_60_gains_lnastates[]       = { 0 };
-const uint8_t rsp1a_0_60_gains_ifgains[]         = { 34 };
-const uint8_t rsp1a_60_120_gains_lnastates[]      = { 0 };
-const uint8_t rsp1a_60_120_gains_ifgains[]        = { 34 };
+const uint8_t rsp1a_0_60_gains_ifgains[]         = { 44 };
+const uint8_t rsp1a_60_120_gains_lnastates[]      = { 0  };
+const uint8_t rsp1a_60_120_gains_ifgains[]        = { 44 };
 const uint8_t rsp1a_120_250_gains_lnastates[]    = { 0 };
-const uint8_t rsp1a_120_250_gains_ifgains[]      = { 34 };
+const uint8_t rsp1a_120_250_gains_ifgains[]      = { 44 };
 const uint8_t rsp1a_250_420_gains_lnastates[]    = { 0 };
-const uint8_t rsp1a_250_420_gains_ifgains[]      = { 34 };
+const uint8_t rsp1a_250_420_gains_ifgains[]      = { 44 };
 const uint8_t rsp1a_420_1000_gains_lnastates[]   = { 0 };
-const uint8_t rsp1a_420_1000_gains_ifgains[]     = { 34 };
+const uint8_t rsp1a_420_1000_gains_ifgains[]     = { 44 };
 const uint8_t rsp1a_1000_2000_gains_lnastates[]    = { 0 };
-const uint8_t rsp1a_1000_2000_gains_ifgains[]      = { 34 };
+const uint8_t rsp1a_1000_2000_gains_ifgains[]      = { 44 };
 
 const uint8_t rsp2_0_60_gains_lnastates[]       = { 0 };
-const uint8_t rsp2_0_60_gains_ifgains[]         = { 34 };
+const uint8_t rsp2_0_60_gains_ifgains[]         = { 44 };
 const uint8_t rsp2_60_120_gains_lnastates[]      = { 0 };
-const uint8_t rsp2_60_120_gains_ifgains[]        = { 34 };
+const uint8_t rsp2_60_120_gains_ifgains[]        = { 44 };
 const uint8_t rsp2_120_250_gains_lnastates[]    = { 0 };
-const uint8_t rsp2_120_250_gains_ifgains[]      = { 34 };
+const uint8_t rsp2_120_250_gains_ifgains[]      = { 44 };
 const uint8_t rsp2_250_420_gains_lnastates[]    = { 0 };
-const uint8_t rsp2_250_420_gains_ifgains[]      = { 34 };
+const uint8_t rsp2_250_420_gains_ifgains[]      = { 44 };
 const uint8_t rsp2_420_1000_gains_lnastates[]   = { 0 };
-const uint8_t rsp2_420_1000_gains_ifgains[]     = { 34 };
+const uint8_t rsp2_420_1000_gains_ifgains[]     = { 44 };
 const uint8_t rsp2_1000_2000_gains_lnastates[]    = { 0 };
-const uint8_t rsp2_1000_2000_gains_ifgains[]      = { 34 };
+const uint8_t rsp2_1000_2000_gains_ifgains[]      = { 44 };
 const uint8_t rsp2_hiz_gains_lnastates[]      = { 0 };
-const uint8_t rsp2_hiz_gains_ifgains[]        = { 34 };
+const uint8_t rsp2_hiz_gains_ifgains[]        = { 44 };
 
 const uint8_t rspduo_0_60_gains_lnastates[]     = { 0 };
-const uint8_t rspduo_0_60_gains_ifgains[]       = { 34 };
+const uint8_t rspduo_0_60_gains_ifgains[]       = { 44 };
 const uint8_t rspduo_60_120_gains_lnastates[]    = { 0 };
-const uint8_t rspduo_60_120_gains_ifgains[]      = { 34 };
+const uint8_t rspduo_60_120_gains_ifgains[]      = { 44 };
 const uint8_t rspduo_120_250_gains_lnastates[]  = { 0 };
-const uint8_t rspduo_120_250_gains_ifgains[]    = { 34 };
+const uint8_t rspduo_120_250_gains_ifgains[]    = { 44 };
 const uint8_t rspduo_250_420_gains_lnastates[]  = { 0 };
-const uint8_t rspduo_250_420_gains_ifgains[]    = { 34 };
+const uint8_t rspduo_250_420_gains_ifgains[]    = { 44 };
 const uint8_t rspduo_420_1000_gains_lnastates[] = { 0 };
-const uint8_t rspduo_420_1000_gains_ifgains[]   = { 34 };
+const uint8_t rspduo_420_1000_gains_ifgains[]   = { 44 };
 const uint8_t rspduo_1000_2000_gains_lnastates[]  = { 0 };
-const uint8_t rspduo_1000_2000_gains_ifgains[]    = { 34 };
+const uint8_t rspduo_1000_2000_gains_ifgains[]    = { 44 };
 const uint8_t rspduo_hiz_gains_lnastates[]    = { 0 };
-const uint8_t rspduo_hiz_gains_ifgains[]      = { 34 };
+const uint8_t rspduo_hiz_gains_ifgains[]      = { 44 };
 
 const uint8_t rspdx_0_60_gains_lnastates[]      = { 0 };
-const uint8_t rspdx_0_60_gains_ifgains[]        = { 34 };
+const uint8_t rspdx_0_60_gains_ifgains[]        = { 44 };
 const uint8_t rspdx_60_120_gains_lnastates[]     = { 0 };
-const uint8_t rspdx_60_120_gains_ifgains[]       = { 34 };
+const uint8_t rspdx_60_120_gains_ifgains[]       = { 44 };
 const uint8_t rspdx_120_250_gains_lnastates[]   = { 0 };
-const uint8_t rspdx_120_250_gains_ifgains[]     = { 34 };
+const uint8_t rspdx_120_250_gains_ifgains[]     = { 44 };
 const uint8_t rspdx_250_420_gains_lnastates[]   = { 0 };
-const uint8_t rspdx_250_420_gains_ifgains[]     = { 34 };
+const uint8_t rspdx_250_420_gains_ifgains[]     = { 44 };
 const uint8_t rspdx_420_1000_gains_lnastates[]  = { 0 };
-const uint8_t rspdx_420_1000_gains_ifgains[]    = { 34 };
+const uint8_t rspdx_420_1000_gains_ifgains[]    = { 44 };
 const uint8_t rspdx_1000_2000_gains_lnastates[]   = { 0 };
-const uint8_t rspdx_1000_2000_gains_ifgains[]     = { 34 };
+const uint8_t rspdx_1000_2000_gains_ifgains[]     = { 44 };
 const uint8_t rspdx_hiz_gains_lnastates[]     = { 0 };
-const uint8_t rspdx_hiz_gains_ifgains[]       = { 34 };
+const uint8_t rspdx_hiz_gains_ifgains[]       = { 44 };
 
 typedef enum {
 	RSP_MODEL_UNKNOWN = 0,
@@ -1604,18 +1604,16 @@ static int set_sample_rate(uint32_t sr)
 
 	f = (double)(sr * deci);
 
-	if (deci == 1 && edgefilter == 0) {
+	if (deci == 1) {
                 chParams->ctrlParams.decimation.enable = 0;
-                chParams->ctrlParams.decimation.decimationFactor = 0;
-                chParams->ctrlParams.decimation.wideBandSignal = 0;
+	}
 
-        }
-	else if (deci >= 1 && edgefilter == 0) {
+	else if (deci > 1 && edgefilter == 0) {
                 chParams->ctrlParams.decimation.enable = 1;
                 chParams->ctrlParams.decimation.decimationFactor = deci;
                 chParams->ctrlParams.decimation.wideBandSignal = 0;
         }
-	else if (deci >= 1 && edgefilter >= 1){
+	else if (deci > 1 && edgefilter >= 1){
 		chParams->ctrlParams.decimation.enable = 1;
 		chParams->ctrlParams.decimation.decimationFactor = deci;
 		chParams->ctrlParams.decimation.wideBandSignal = 1;
@@ -1971,7 +1969,7 @@ void usage(void)
 		"\t-R Refclk output enable* (default: disabled)\n"
 		"\t-f frequency to tune to [Hz] - If freq set centerfreq and progfreq is ignored!!\n"
 		"\t-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!\n"
-		"\t-G AGC setpoint (default: -34 / recommended values -1 to -69 / 0 disabled)\n"
+		"\t-G AGC setpoint (default: -40 / recommended values -1 to -69 / 0 disabled)\n"
 		"\t-g AGC disable* (default: enabled)\n"
 		"\t-r rfgain only works if -g is set (default: 0 internal table / values 10-60)\n"
 		"\t-l lnalevel (default: 0 / typical used values 0-6 depending on the device)\n"
