@@ -582,20 +582,16 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
                         data = (unsigned char*)rpt->data;
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
+                                xi2 = *xi + 1536;
+                                xq2 = *xq + 1536;
 
-				if (*xi < -1536)
-                                        {xi2 = -1536;}
-                                else if (*xi > 1535)
-                                        {xi2 = 1535;}
-                                else {xi2 = *xi;}
-                                if (*xq < -1536)
-                                        {xq2 = -1536;}
-                                else if (*xq > 1535)
-                                        {xq2 = 1535;}
-                                else {xq2 = *xq;}
+                                if (*xi < -1536 || *xi > 1535 || *xq < -1536 || *xq > 1535) {
+                                        xi2 = 0;
+                                        xq2 = 0;
+                                }
 
-				*(data++) = (unsigned char)(xi2 / 12) + 128.5;
-                                *(data++) = (unsigned char)(xq2 / 12) + 128.5;
+                                *(data++) = (unsigned char)(xi2 / 12);
+                                *(data++) = (unsigned char)(xq2 / 12);
 
 			rpt->len = 2 * numSamples;
                 }
@@ -652,23 +648,17 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
                         unsigned char *data;
                         data = (unsigned char*)rpt->data;
 
-				for (i = 0; i < numSamples; i++, xi++, xq++) {
+			for (i = 0; i < numSamples; i++, xi++, xq++) {
+                                xi2 = *xi + 1536;
+                                xq2 = *xq + 1536;
 
-                                if (*xi < -1536)
-                                        {xi2 = -1536;}
-                                else if (*xi > 1535)
-                                        {xi2 = 1535;}
-                                else {xi2 = *xi;}
-                                if (*xq < -1536)
-                                        {xq2 = -1536;}
-                                else if (*xq > 1535)
-                                        {xq2 = 1535;}
-                                else {xq2 = *xq;}
+                                if (*xi < -1536 || *xi > 1535 || *xq < -1536 || *xq > 1535) {
+                                        xi2 = 0;
+                                        xq2 = 0;
+                                }
 
-                                *(data++) = (unsigned char)(xi2 / 12) + 128.5;
-                                *(data++) = (unsigned char)(xq2 / 12) + 128.5;
-
-
+                                *(data++) = (unsigned char)(xi2 / 12);
+                                *(data++) = (unsigned char)(xq2 / 12);
 
                         rpt->len = 2 * numSamples;
                 }
@@ -1578,6 +1568,7 @@ static int set_sample_rate(uint32_t sr)
         }
 	else
         {
+//		deci = 1;
                 if (sr >= 8000000 && sr <= 10000000)
                 {
                         bwType = sdrplay_api_BW_8_000;
@@ -1600,7 +1591,6 @@ static int set_sample_rate(uint32_t sr)
                 else
                 if (sr >= 2500000 && sr < 5000000)
                 {
-                        // deci = 2;
                         if (wideband >= 1 && sr >= 2880000) bwType = sdrplay_api_BW_5_000;
                         else bwType = sdrplay_api_BW_1_536;
                 }
