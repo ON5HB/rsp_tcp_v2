@@ -132,8 +132,8 @@ static volatile int ctrlC_exit = 0;
 #define DEFAULT_BW_T sdrplay_api_BW_1_536
 #define DEFAULT_FREQUENCY (100000000)
 #define DEFAULT_SAMPLERATE (2048000)
-#define DEFAULT_AGC_SETPOINT -40
-#define DEFAULT_GAIN_REDUCTION 44
+#define DEFAULT_AGC_SETPOINT -30
+#define DEFAULT_GAIN_REDUCTION 40
 #define DEFAULT_LNA_STATE 0
 #define DEFAULT_AGC_STATE 1
 #define RTLSDR_TUNER_R820T 5
@@ -583,25 +583,32 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
 
-				xi2 = *xi + 1536;
-                                xq2 = *xq + 1536;
+				xi2 = *xi;
+                                xq2 = *xq;
 
-				if (*xi < -1536 ) {
-                                        xi2 = -1536;
+                                if (*xi < -8192 ) {
+                                        xi2 = -8192;
                                 }
-                                else if (*xi > 1535 ) {
-                                        xi2 = 1535;
-                                }
-
-                                if (*xq < -1536 ) {
-                                        xq2 = -1536;
-                                }
-                                else if (*xq > 1535 ) {
-                                        xq2 = 1535;
+                                else if (*xi > 8191 ) {
+                                        xi2 = 8191;
                                 }
 
-                                *(data++) = (unsigned char)(xi2 / 12);
-                                *(data++) = (unsigned char)(xq2 / 12);
+                                if (*xq < -8192 ) {
+                                        xq2 = -8192;
+                                }
+                                else if (*xq > 8191 ) {
+                                        xq2 = 8191;
+                                }
+
+                                *(data++) = (unsigned char)((xi2 / 64) +128.5);
+                                *(data++) = (unsigned char)((xq2 / 64) +128.5);
+
+                                        if (verbose) {
+                                                // I/Q value reader - if enabled show values
+                                                if (*xi > 8192 || *xi < -8192 || *xq > 8192 || *xq < -8192) {
+                                                printf("xi=%hd,xi2=%hd,xq=%hd,xq2=%hd\n",*xi,xi2,*xq,xq2);}
+                                        };
+
 
 			rpt->len = 2 * numSamples;
                 }
@@ -660,25 +667,32 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
 
-				xi2 = *xi + 1536;
-                                xq2 = *xq + 1536;
+				xi2 = *xi;
+                                xq2 = *xq;
 
-				if (*xi < -1536 ) {
-                                        xi2 = -1536;
+                                if (*xi < -8192 ) {
+                                        xi2 = -8192;
                                 }
-                                else if (*xi > 1535 ) {
-                                        xi2 = 1535;
-                                }
-
-                                if (*xq < -1536 ) {
-                                        xq2 = -1536;
-                                }
-                                else if (*xq > 1535 ) {
-                                        xq2 = 1535;
+                                else if (*xi > 8191 ) {
+                                        xi2 = 8191;
                                 }
 
-                                *(data++) = (unsigned char)(xi2 / 12);
-                                *(data++) = (unsigned char)(xq2 / 12);
+                                if (*xq < -8192 ) {
+                                        xq2 = -8192;
+                                }
+                                else if (*xq > 8191 ) {
+                                        xq2 = 8191;
+                                }
+
+                                *(data++) = (unsigned char)((xi2 / 64) +128.5);
+                                *(data++) = (unsigned char)((xq2 / 64) +128.5);
+
+                                        if (verbose) {
+                                                // I/Q value reader - if enabled show values
+                                                if (*xi > 8192 || *xi < -8192 || *xq > 8192 || *xq < -8192) {
+                                                printf("xi=%hd,xi2=%hd,xq=%hd,xq2=%hd\n",*xi,xi2,*xq,xq2);}
+                                        };
+
 
                         rpt->len = 2 * numSamples;
                 }
@@ -1989,7 +2003,7 @@ void usage(void)
 		"\t-R Refclk output enable* (default: disabled)\n"
 		"\t-f frequency to tune to [Hz] - If freq set centerfreq and progfreq is ignored!!\n"
 		"\t-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!\n"
-		"\t-G AGC setpoint (default: -40 / recommended values -1 to -69 / 0 disabled)\n"
+		"\t-G AGC setpoint (default: -30 / recommended values -1 to -69 / 0 disabled)\n"
 		"\t-g AGC disable* (default: enabled)\n"
 		"\t-r rfgain only works if -g is set (default: 0 internal table / values 10-60)\n"
 		"\t-l lnalevel (default: 0 / typical used values 0-6 depending on the device)\n"
