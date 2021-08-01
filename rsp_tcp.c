@@ -553,8 +553,6 @@ void event_callback(sdrplay_api_EventT eventId, sdrplay_api_TunerSelectT tunerS,
 void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, unsigned int numSamples, unsigned int reset, void* cbContext)
 {
 	unsigned int i;
-	short xi2=0;
-	short xq2=0;
 	if(params->fsChanged != 0)
 	{
 		fsc = params->fsChanged;
@@ -583,35 +581,11 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
 
-				xi2 = *xi;
-                                xq2 = *xq;
+				*(data++) = (unsigned char)(((*xi << 2) + 0x8080) >> 8);
+                                *(data++) = (unsigned char)(((*xq << 2) + 0x8080) >> 8);
 
-                                if (*xi < -8192 ) {
-                                        xi2 = -8192;
-                                }
-                                else if (*xi > 8191 ) {
-                                        xi2 = 8191;
-                                }
-
-                                if (*xq < -8192 ) {
-                                        xq2 = -8192;
-                                }
-                                else if (*xq > 8191 ) {
-                                        xq2 = 8191;
-                                }
-
-                                *(data++) = (unsigned char)((xi2 / 64) +128.5);
-                                *(data++) = (unsigned char)((xq2 / 64) +128.5);
-
-                                        if (verbose) {
-                                                // I/Q value reader - if enabled show values
-                                                if (*xi > 8192 || *xi < -8192 || *xq > 8192 || *xq < -8192) {
-                                                printf("xi=%hd,xi2=%hd,xq=%hd,xq2=%hd\n",*xi,xi2,*xq,xq2);}
-                                        };
-
-
-			rpt->len = 2 * numSamples;
-                }
+				rpt->len = 2 * numSamples;
+        	        }
 
 		rpt->next = NULL;
 
@@ -655,8 +629,6 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, unsigned int numSamples, unsigned int reset, void* cbContext)
 {
 	unsigned int i;
-	short xi2=0;
-	short xq2=0;
 
 	if(!do_exit) {
                 struct llist *rpt = (struct llist*)malloc(sizeof(struct llist));
@@ -667,34 +639,10 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 			for (i = 0; i < numSamples; i++, xi++, xq++) {
 
-				xi2 = *xi;
-                                xq2 = *xq;
+				*(data++) = (unsigned char)(((*xi << 2) + 0x8080) >> 8);
+                                *(data++) = (unsigned char)(((*xq << 2) + 0x8080) >> 8);
 
-                                if (*xi < -8192 ) {
-                                        xi2 = -8192;
-                                }
-                                else if (*xi > 8191 ) {
-                                        xi2 = 8191;
-                                }
-
-                                if (*xq < -8192 ) {
-                                        xq2 = -8192;
-                                }
-                                else if (*xq > 8191 ) {
-                                        xq2 = 8191;
-                                }
-
-                                *(data++) = (unsigned char)((xi2 / 64) +128.5);
-                                *(data++) = (unsigned char)((xq2 / 64) +128.5);
-
-                                        if (verbose) {
-                                                // I/Q value reader - if enabled show values
-                                                if (*xi > 8192 || *xi < -8192 || *xq > 8192 || *xq < -8192) {
-                                                printf("xi=%hd,xi2=%hd,xq=%hd,xq2=%hd\n",*xi,xi2,*xq,xq2);}
-                                        };
-
-
-                        rpt->len = 2 * numSamples;
+				rpt->len = 2 * numSamples;
                 }
 
 		rpt->next = NULL;
