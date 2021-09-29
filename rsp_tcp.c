@@ -583,8 +583,8 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 				if ( hardware_model == RSP_MODEL_RSP1 || hardware_model == RSP_MODEL_RSP2 ) {
 					//RSP1 and RSP2 are only 12bit.
-					*(data++) = (unsigned char)(((*xi << 4) + 0x8080) >> 8);
-        	                        *(data++) = (unsigned char)(((*xq << 4) + 0x8080) >> 8);
+					*(data++) = (unsigned char)(((*xi << 3) + 0x8080) >> 8);
+        	                        *(data++) = (unsigned char)(((*xq << 3) + 0x8080) >> 8);
 				}
 				else {
 					*(data++) = (unsigned char)(((*xi << 2) + 0x8080) >> 8);
@@ -648,8 +648,8 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 				if ( hardware_model == RSP_MODEL_RSP1 || hardware_model == RSP_MODEL_RSP2 ) {
                                         //RSP1 and RSP2 are only 12bit.
-                                        *(data++) = (unsigned char)(((*xi << 4) + 0x8080) >> 8);
-                                        *(data++) = (unsigned char)(((*xq << 4) + 0x8080) >> 8);
+                                        *(data++) = (unsigned char)(((*xi << 3) + 0x8080) >> 8);
+                                        *(data++) = (unsigned char)(((*xq << 3) + 0x8080) >> 8);
                                 }
                                 else {
                                         *(data++) = (unsigned char)(((*xi << 2) + 0x8080) >> 8);
