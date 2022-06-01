@@ -154,6 +154,7 @@ static int enable_refout = 0;
 static uint8_t if_gr;
 static uint8_t lnastate;
 static uint8_t deci = 1;
+static int noiseshape = 1; //Noiseshape 0=off / 1=on
 
 sdrplay_api_DeviceT devices[MAX_DEVS];
 sdrplay_api_DeviceT *chosenDev;
@@ -573,26 +574,59 @@ void rxa_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 	}
 
 	if(!do_exit) {
-                struct llist *rpt = (struct llist*)malloc(sizeof(struct llist));
-		rpt->data = (char*)malloc(2 * numSamples);
-			// assemble the data
-                        unsigned char *data;
-                        data = (unsigned char*)rpt->data;
+		struct llist *rpt = (struct llist*)malloc(sizeof(struct llist));
+                	rpt->data = (char*)malloc(2 * numSamples);
+                        // assemble the data
 
-			for (i = 0; i < numSamples; i++, xi++, xq++) {
+                                                short xqi = 0;
+                                                short xqq = 0;
+                                                short errori = 0;
+                                                short errorq = 0;
+                                                short errorIa[5] = {0,0,0,0,0};
+                                                short errorQa[5] = {0,0,0,0,0};
+                                                // short H[4] = {-0.75-0.125/2, 0.75, -0.5, 0.25 -0.125/2};  // filter response
+                                                short error_corrI = 0;
+                                                short error_corrQ = 0;
 
-				if ( hardware_model == RSP_MODEL_RSP1 || hardware_model == RSP_MODEL_RSP2 ) {
-					//RSP1 and RSP2 are only 12bit.
-					*(data++) = (unsigned char)(((*xi << 3) + 0x8080) >> 8);
-        	                        *(data++) = (unsigned char)(((*xq << 3) + 0x8080) >> 8);
-				}
-				else {
-					*(data++) = (unsigned char)(((*xi << 2) + 0x8080) >> 8);
-                                        *(data++) = (unsigned char)(((*xq << 2) + 0x8080) >> 8);
-				}
+                        char *data;
+                        data = (char*)rpt->data;
 
-				rpt->len = 2 * numSamples;
-        	        }
+                        for (i = 0; i < numSamples; i++, xi++, xq++) {
+                                if (noiseshape == 0) {
+                                        xqi = (((*xi ) << 2) >> 8);
+                                        xqq = (((*xq ) << 2) >> 8);
+                                }
+                                else {
+					error_corrI = -((errorIa[0]>>1)+(errorIa[0]>>2)+(errorIa[0]>>4));
+                                        error_corrQ = -((errorQa[0]>>1)+(errorQa[0]>>2)+(errorQa[0]>>4));
+                                        error_corrI += ((errorIa[1]>>1)+(errorIa[1]>>2));
+                                        error_corrQ += ((errorQa[1]>>1)+(errorQa[1]>>2));
+                                        error_corrI -= (errorIa[2]>>1);
+                                        error_corrQ -= (errorQa[2]>>1);
+                                        error_corrI += (errorIa[3]>>2);
+                                        error_corrQ += (errorQa[3]>>2);
+                                        error_corrI -= (errorIa[4]>>4);
+                                        error_corrQ -= (errorQa[4]>>4);
+                                        xqi = (((*xi + error_corrI) << 2) >> 8);
+                                        xqq = (((*xq + error_corrQ) << 2) >> 8);
+                                        errori = (xqi << 6) - *xi; // 6 ipv. 8 ivm. sample_shift=2
+                                        errorq = (xqq << 6) - *xq;
+                                        errorIa[4]=errorIa[3];
+                                        errorIa[3]=errorIa[2];
+                                        errorIa[2]=errorIa[1];
+                                        errorIa[1]=errorIa[0];
+                                        errorIa[0]=errori-error_corrI;
+                                        errorQa[4]=errorQa[3];
+                                        errorQa[3]=errorQa[2];
+                                        errorQa[2]=errorQa[1];
+                                        errorQa[1]=errorQa[0];
+                                        errorQa[0]=errorq-error_corrQ;
+                                }
+                        *(data++) = (unsigned char)(xqi + 128);
+                        *(data++) = (unsigned char)(xqq + 128);
+
+                        rpt->len = 2 * numSamples;
+                }
 
 		rpt->next = NULL;
 
@@ -639,24 +673,57 @@ void rxb_callback(short* xi, short* xq, sdrplay_api_StreamCbParamsT *params, uns
 
 	if(!do_exit) {
                 struct llist *rpt = (struct llist*)malloc(sizeof(struct llist));
-		rpt->data = (char*)malloc(2 * numSamples);
-			// assemble the data
-                        unsigned char *data;
-                        data = (unsigned char*)rpt->data;
+                        rpt->data = (char*)malloc(2 * numSamples);
+                        // assemble the data
 
-			for (i = 0; i < numSamples; i++, xi++, xq++) {
+                                                short xqi = 0;
+                                                short xqq = 0;
+                                                short errori = 0;
+                                                short errorq = 0;
+                                                short errorIa[5] = {0,0,0,0,0};
+                                                short errorQa[5] = {0,0,0,0,0};
+                                                // short H[4] = {-0.75-0.125/2, 0.75, -0.5, 0.25 -0.125/2};  // filter response
+                                                short error_corrI = 0;
+                                                short error_corrQ = 0;
 
-				if ( hardware_model == RSP_MODEL_RSP1 || hardware_model == RSP_MODEL_RSP2 ) {
-                                        //RSP1 and RSP2 are only 12bit.
-                                        *(data++) = (unsigned char)(((*xi << 3) + 0x8080) >> 8);
-                                        *(data++) = (unsigned char)(((*xq << 3) + 0x8080) >> 8);
+                        char *data;
+                        data = (char*)rpt->data;
+
+                        for (i = 0; i < numSamples; i++, xi++, xq++) {
+                                if (noiseshape == 0) {
+                                        xqi = (((*xi ) << 2) >> 8);
+                                        xqq = (((*xq ) << 2) >> 8);
                                 }
                                 else {
-                                        *(data++) = (unsigned char)(((*xi << 2) + 0x8080) >> 8);
-                                        *(data++) = (unsigned char)(((*xq << 2) + 0x8080) >> 8);
+					error_corrI = -((errorIa[0]>>1)+(errorIa[0]>>2)+(errorIa[0]>>4));
+                                        error_corrQ = -((errorQa[0]>>1)+(errorQa[0]>>2)+(errorQa[0]>>4));
+                                        error_corrI += ((errorIa[1]>>1)+(errorIa[1]>>2));
+                                        error_corrQ += ((errorQa[1]>>1)+(errorQa[1]>>2));
+                                        error_corrI -= (errorIa[2]>>1);
+                                        error_corrQ -= (errorQa[2]>>1);
+                                        error_corrI += (errorIa[3]>>2);
+                                        error_corrQ += (errorQa[3]>>2);
+                                        error_corrI -= (errorIa[4]>>4);
+                                        error_corrQ -= (errorQa[4]>>4);
+                                        xqi = (((*xi + error_corrI) << 2) >> 8);
+                                        xqq = (((*xq + error_corrQ) << 2) >> 8);
+                                        errori = (xqi << 6) - *xi; // 6 ipv. 8 ivm. sample_shift=2
+                                        errorq = (xqq << 6) - *xq;
+                                        errorIa[4]=errorIa[3];
+                                        errorIa[3]=errorIa[2];
+                                        errorIa[2]=errorIa[1];
+                                        errorIa[1]=errorIa[0];
+                                        errorIa[0]=errori-error_corrI;
+                                        errorQa[4]=errorQa[3];
+                                        errorQa[3]=errorQa[2];
+                                        errorQa[2]=errorQa[1];
+                                        errorQa[1]=errorQa[0];
+                                        errorQa[0]=errorq-error_corrQ;
                                 }
+                        *(data++) = (unsigned char)(xqi + 128);
+                        *(data++) = (unsigned char)(xqq + 128);
 
-				rpt->len = 2 * numSamples;
+                        rpt->len = 2 * numSamples;
                 }
 
 		rpt->next = NULL;
@@ -1967,6 +2034,7 @@ void usage(void)
 		"\t-s samplerate in [Hz] - If sample rate is set it will be ignored from client!!\n"
 		"\t-G AGC setpoint (default: -30 / recommended values -1 to -69 / 0 disabled)\n"
 		"\t-g AGC disable* (default: enabled)\n"
+		"\t-N NoiseShaping* disable (default: enabled)\n"
 		"\t-r rfgain only works if -g is set (default: 0 internal table / values 10-60)\n"
 		"\t-l lnalevel (default: 0 / typical used values 0-6 depending on the device)\n"
 		"\t-W wideband enable (default: 2 / values: 0 small / 1 wide / 2 = optimised)\n"
@@ -2010,7 +2078,7 @@ int main(int argc, char **argv)
 	struct sigaction sigact, sigign;
 #endif
 
-	while ((opt = getopt(argc, argv, "a:p:f:s:n:d:P:G:r:l:W:gETvADBFR")) != -1) {
+	while ((opt = getopt(argc, argv, "a:p:f:s:n:d:P:G:r:l:W:gETvADBFNR")) != -1) {
 		switch (opt) {
 		case 'd':
 			device = atoi(optarg) - 1;
@@ -2053,6 +2121,10 @@ int main(int argc, char **argv)
 		case 'g':
                         agcenable = 0;
                         break;
+		case 'N':
+                        noiseshape = 0;
+                        break;
+
 		case 'T':
 			enable_biastee = 1;
 			break;
@@ -2240,6 +2312,7 @@ int main(int argc, char **argv)
 
 		printf("client accepted!\n");
                 printf("Edgefilter set %d (0=off 1=on)\n", edgefilter);
+		printf("Noiseshaping set %d (0=off 1=on)\n", noiseshape);
 
 		memset(&dongle_info, 0, sizeof(dongle_info));
 		memcpy(&dongle_info.magic, "RTL0", 4);
