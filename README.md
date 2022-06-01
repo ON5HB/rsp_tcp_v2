@@ -105,6 +105,7 @@ Usage:
  - Version 2.1.1: Some commandline options where not working like -d, it would fail to init the correct box.
  - Version 2.1.8: Fixed conversion errors.
  - Version 2.2.0: Fixed decimate and bandfilters, also added auto-optimised for eacht band (=default) driver not 100% tested, just updated.
+ - Version 2.3.0: Added noise-shaping, not tested, just updated and it compiles 100%, so it should work.
 
 ## CREDITS
  - [Open Source Mobile Communications (OSMOCOM)](https://github.com/osmocom/rtl-sdr.git) team for the original rtl_tcp code
