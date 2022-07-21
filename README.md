@@ -72,7 +72,8 @@ Usage:
  - Install the HW/API >3.07 driver from RSPplay for the RSP1A first!! (on website shown as 3.06)
 
 ## BUILDING
-```
+``` 
+  apt install build-essential (debian)
   mkdir build
   cd build
   cmake ..
