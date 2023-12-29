@@ -7,6 +7,9 @@
 ## Development stopped due to undocumented API and too many bugs in the API ##
 ## Please use v1 driver if your box is supported by it ##
 
+PLEASE DO NOT CONTACT ME ABOUT CLONES, I DO NOT SUPPORT THEM, YOU ARE ON YOUR OWN IF YOU BUY THOSE.
+THEY HURT SDRPLAY AS A COMPANY.
+
 An rtl_tcp compatible IQ server for the RSP range of SDRPlay SDR but DOES support the RSPdx (untested)
 
 ### The best SDRplay to buy and use for websdr.org is the RSP1A, it has the best filters and notches!!!!!!!
